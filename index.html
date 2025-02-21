@@ -98,11 +98,25 @@
             const percentage = (total / 75000) * 100;
             document.getElementById("progressBar").style.width = percentage + "%";
             document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
+            document.getElementById("totalHM").textContent = total;
         }
         
         function drawChart(total) {
             const ctx = document.getElementById("myChart").getContext("2d");
             new Chart(ctx, {
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            suggestedMin: 0,
+                            suggestedMax: 85000
+                        }
+                    }
+                },
                 type: "line",
                 data: {
                     labels: ["Start", "10k", "25k", "50k", "75k"],
