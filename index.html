@@ -50,6 +50,7 @@
     
     <script>
         const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
+        let chart; // Declare a variable to hold the chart instance
 
         async function submitData() {
             const name = document.getElementById("name").value;
@@ -103,36 +104,39 @@
         
         function drawChart(total) {
             const ctx = document.getElementById("myChart").getContext("2d");
-            new Chart(ctx, {
-    type: "line",
-    data: {
-        labels: ["Start", "10k", "25k", "50k", "75k"],
-        datasets: [{
-            label: "Höhenmeter Fortschritt",
-            data: [total, 10000, 25000, 50000, 75000],
-            borderColor: "#4caf50",
-            backgroundColor: "rgba(76, 175, 80, 0.4)",
-            fill: true,
-            tension: 0.4,
-            pointStyle: 'triangle',
-            pointRadius: [5, 5, 5, 5, 5],
-            pointBackgroundColor: ["red", "blue", "yellow", "orange", "black"]
-        }]
-    },
-    options: {
-        plugins: {
-            legend: {
-                display: false
+            if (chart) { // Check if the chart instance exists
+                chart.destroy(); // Destroy the existing chart instance before creating a new one
             }
-        },
-        scales: {
-            y: {
-                suggestedMin: 0,
-                suggestedMax: 85000
-            }
-        }
-    }
-});
+            chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: ["Start", "10k", "25k", "50k", "75k"],
+                    datasets: [{
+                        label: "Höhenmeter Fortschritt",
+                        data: [total, 10000, 25000, 50000, 75000],
+                        borderColor: "#4caf50",
+                        backgroundColor: "rgba(76, 175, 80, 0.4)",
+                        fill: true,
+                        tension: 0.4,
+                        pointStyle: 'triangle',
+                        pointRadius: [5, 5, 5, 5, 5],
+                        pointBackgroundColor: ["red", "blue", "yellow", "orange", "black"]
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            suggestedMin: 0,
+                            suggestedMax: 85000
+                        }
+                    }
+                }
+            });
         }
         
         function checkGoals(total) {
@@ -144,8 +148,12 @@
                     lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
                 }
             });
+            if (lastGoal === "-") {
+                document.getElementById("goalBanner").innerHTML = "🎉 Noch kein Ziel erreicht!";
+            } else {
+                document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
+            }
             document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
-            document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
             document.getElementById("goalBanner").style.display = "block";
         }
         
