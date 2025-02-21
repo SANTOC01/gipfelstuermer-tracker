@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gipfelstürmer Event 2025</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+    input, button { margin: 10px; padding: 10px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid black; padding: 8px; background: white; }
+    canvas { margin-top: 20px; }
+    .progress-bar { width: 100%; background: #ddd; border-radius: 20px; }
+    .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; }
+  </style>
+</head>
+<body>
+<h1>🏃 Gipfelstürmer Event 2025 🏔️</h1>
+<p>Gemeinsam sammeln wir 75.000 Höhenmeter bis zum 27.07.2025!</p>
+
+<input type="text" id="name" placeholder="Dein Name">
+<input type="number" id="hohenmeter" placeholder="Höhenmeter">
+<button onclick="submitData()">Absenden</button>
+
+<h2>📋 Letzte Einträge</h2>
+<table id="dataTable">
+  <tr><th>Name</th><th>Höhenmeter</th><th>Datum</th></tr>
+</table>
+
+<h2>📈 Fortschritt</h2>
+<div class="progress-bar">
+  <div class="progress" id="progressBar">0%</div>
+</div>
+<canvas id="myChart"></canvas>
+
+<h2>🏆 Belohnungen</h2>
+<ul>
+  <li>🎭 <b>10.000 HM</b> → Trainer im Kostüm</li>
+  <li>🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</li>
+  <li>🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</li>
+  <li>🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</li>
+</ul>
+
+<script>
+  const sheetURL = "https://script.google.com/macros/s/AKfycbzxvxGL-v-McAUZIH-QuRTSSp3Ce4R2HU-w5lSnLDeRkyZ9G4LCGT-_Gi9Mzf6vnw/exec";
+
+  async function submitData() {
+    const name = document.getElementById("name").value;
+    const hohenmeter = document.getElementById("hohenmeter").value;
+
+    if (!name || !hohenmeter) {
+      alert("Bitte beide Felder ausfüllen!");
+      return;
+    }
+
+    await fetch(sheetURL, {
+      method: "POST",
+      body: JSON.stringify({ name, hohenmeter }),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    alert("Eingetragen! Danke fürs Mitmachen! 🎉");
+    location.reload();
+  }
+
+  async function loadData() {
+    const response = await fetch(sheetURL);
+    const data = await response.json();
+    const table = document.getElementById("dataTable");
+
+    table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th></tr>";
+    let total = 0;
+
+    data.slice(1).forEach(row => {
+      table.innerHTML += `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${new Date(row[2]).toLocaleDateString()}</td></tr>`;
+      total += parseInt(row[1]);
+    });
+
+    updateProgress(total);
+    drawChart(total);
+  }
+
+  function updateProgress(total) {
+    const percentage = (total / 75000) * 100;
+    document.getElementById("progressBar").style.width = percentage + "%";
+    document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
+  }
+
+  function drawChart(total) {
+    const ctx = document.getElementById("myChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Gesamt-Höhenmeter"],
+        datasets: [{ label: "Fortschritt", data: [total], backgroundColor: "#4caf50" }]
+      }
+    });
+  }
+
+  loadData();
+</script>
+</body>
+</html>
