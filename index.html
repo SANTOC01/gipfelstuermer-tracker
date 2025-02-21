@@ -14,11 +14,14 @@
         .progress-bar { width: 100%; background: #ddd; border-radius: 20px; }
         .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; transition: width 0.5s; }
         .goal { font-size: 20px; font-weight: bold; margin-top: 10px; }
+        .banner { background: #ffcc00; padding: 10px; font-size: 18px; font-weight: bold; margin: 10px auto; display: none; width: 80%; border-radius: 10px; }
     </style>
 </head>
 <body>
     <h1>🏃 Gipfelstürmer Event 2025 🏔️</h1>
     <p>Gemeinsam sammeln wir 75.000 Höhenmeter bis zum 27.07.2025!</p>
+    
+    <div id="goalBanner" class="banner"></div>
     
     <input type="text" id="name" placeholder="Dein Name">
     <input type="number" id="hohenmeter" placeholder="Höhenmeter">
@@ -48,7 +51,7 @@
     <script>
         const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
 
-        function submitData() {
+        async function submitData() {
             const name = document.getElementById("name").value;
             const hohenmeter = document.getElementById("hohenmeter").value;
             
@@ -57,13 +60,15 @@
                 return;
             }
             
-            window.location.href = `${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`;
+            await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+            alert("Eingetragen! Danke fürs Mitmachen! 🎉");
+            loadData();
         }
         
         async function deleteData(name, hohenmeter) {
             await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
             alert("Eintrag gelöscht!");
-            location.reload();
+            loadData();
         }
         
         async function loadData() {
@@ -98,10 +103,16 @@
         function drawChart(total) {
             const ctx = document.getElementById("myChart").getContext("2d");
             new Chart(ctx, {
-                type: "bar",
+                type: "line",
                 data: {
-                    labels: ["Gesamt-Höhenmeter"],
-                    datasets: [{ label: "Fortschritt", data: [total], backgroundColor: "#4caf50" }]
+                    labels: ["Start", "10k", "25k", "50k", "75k"],
+                    datasets: [{
+                        label: "Höhenmeter Fortschritt",
+                        data: [0, 10000, 25000, 50000, 75000],
+                        borderColor: "#4caf50",
+                        fill: true,
+                        tension: 0.4
+                    }]
                 }
             });
         }
@@ -116,6 +127,8 @@
                 }
             });
             document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
+            document.getElementById("goalBanner").innerText = `🎉 Ziel erreicht: ${lastGoal}!`;
+            document.getElementById("goalBanner").style.display = "block";
         }
         
         loadData();
