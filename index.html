@@ -43,46 +43,48 @@
     </ul>
     
     <script>
-        const sheetURL = "https://script.google.com/macros/s/AKfycbwTIxBhEA41f0qF8RE0XVejD3UHZTv2rzTJuA_Wo3NmO9Vhq70hcnc0MJMGd7pV9eZB/exec";
+        const sheetURL = "https://script.google.com/macros/s/AKfycbwJ9qXJSV6Oc7q3fXZrEkqrww8Oyyh_Wo8gWEAvwvNg92rMFzQAmFnpnlgDkLhJ-zqI/exec"; 
 
         async function submitData() {
-            const name = document.getElementById("name").value;
-            const hohenmeter = document.getElementById("hohenmeter").value;
-            
+            const name = encodeURIComponent(document.getElementById("name").value);
+            const hohenmeter = encodeURIComponent(document.getElementById("hohenmeter").value);
+
             if (!name || !hohenmeter) {
                 alert("Bitte beide Felder ausfüllen!");
                 return;
             }
 
-            await fetch(sheetURL, {
-                method: "POST",
-                body: JSON.stringify({ name, hohenmeter }),
-                headers: { "Content-Type": "application/json" }
-            });
-            
-            alert("Eingetragen! Danke fürs Mitmachen! 🎉");
-            location.reload();
+            const url = `${sheetURL}?action=add&name=${name}&hohenmeter=${hohenmeter}`;
+
+            await fetch(url, { method: "GET" })
+                .then(response => response.text())
+                .then(() => {
+                    alert("Eingetragen! Danke fürs Mitmachen! 🎉");
+                    location.reload();
+                })
+                .catch(error => console.error(error));
         }
-        
+
         async function deleteData(name, hohenmeter) {
-            await fetch(sheetURL, {
-                method: "POST",
-                body: JSON.stringify({ action: "delete", name, hohenmeter }),
-                headers: { "Content-Type": "application/json" }
-            });
-            
-            alert("Eintrag gelöscht!");
-            location.reload();
+            const url = `${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`;
+
+            await fetch(url, { method: "GET" })
+                .then(response => response.text())
+                .then(() => {
+                    alert("Eintrag gelöscht!");
+                    location.reload();
+                })
+                .catch(error => console.error(error));
         }
-        
+
         async function loadData() {
-            const response = await fetch(sheetURL);
+            const response = await fetch(`${sheetURL}?action=get`);
             const data = await response.json();
             const table = document.getElementById("dataTable");
-            
+
             table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
             let total = 0;
-            
+
             data.slice(1).forEach(row => {
                 table.innerHTML += `<tr>
                     <td>${row[0]}</td>
@@ -92,17 +94,17 @@
                 </tr>`;
                 total += parseInt(row[1]);
             });
-            
+
             updateProgress(total);
             drawChart(total);
         }
-        
+
         function updateProgress(total) {
             const percentage = (total / 75000) * 100;
             document.getElementById("progressBar").style.width = percentage + "%";
             document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
         }
-        
+
         function drawChart(total) {
             const ctx = document.getElementById("myChart").getContext("2d");
             new Chart(ctx, {
@@ -113,7 +115,7 @@
                 }
             });
         }
-        
+
         loadData();
     </script>
 </body>
