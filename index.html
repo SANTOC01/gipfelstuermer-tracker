@@ -32,7 +32,7 @@
         <tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>
     </table>
     
-    <h2>📈 Fortschritt</h2>
+    <h2>📈 Fortschritt – Gesamt: <span id='totalHM'>0</span> HM</h2>
     <div class="progress-bar">
         <div class="progress" id="progressBar">0%</div>
     </div>
@@ -49,7 +49,7 @@
     </ul>
     
     <script>
-        const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
+        const sheetURL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
 
         async function submitData() {
             const name = document.getElementById("name").value;
@@ -127,7 +127,7 @@
                 }
             });
             document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
-            document.getElementById("goalBanner").innerText = `🎉 Ziel erreicht: ${lastGoal}!`;
+            document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
             document.getElementById("goalBanner").style.display = "block";
         }
         
