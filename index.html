@@ -43,7 +43,7 @@
 </ul>
 
 <script>
-  const sheetURL = "https://script.google.com/macros/s/AKfycbzqrc5r9_9S4pslvLueRAFZ-MBfGtPXc1McCcC0saJYJVxYZvdhzd-SMzXplN_aekaZ/exec";
+  const sheetURL = "https://script.google.com/macros/s/AKfycbyB2NZIfTPB0j7hxqoZIbh7O7qOtH5HfEapq-qZYBLIj_evlgjI8-7W8hjdtfaHjs_b/exec";
 
   async function submitData() {
     const name = document.getElementById("name").value;
@@ -68,7 +68,13 @@
   }
 
   async function loadData() {
-    const response = await fetch(sheetURL);
+    const response = await fetch(sheetURL, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
     const data = await response.json();
     const table = document.getElementById("dataTable");
 
