@@ -68,46 +68,56 @@
   }
 
   async function loadData() {
-    const response = await fetch(sheetURL, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-    const data = await response.json();
-    const table = document.getElementById("dataTable");
+    try {
+        const response = await fetch(sheetURL, {
+            method: "GET",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-    table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th></tr>";
-    let total = 0;
+        const data = await response.json();
+        const table = document.getElementById("dataTable");
 
-    data.slice(1).forEach(row => {
-      table.innerHTML += `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${new Date(row[2]).toLocaleDateString()}</td></tr>`;
-      total += parseInt(row[1]);
-    });
+        table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th></tr>";
+        let total = 0;
 
-    updateProgress(total);
-    drawChart(total);
-  }
+        data.slice(1).forEach(row => {
+            table.innerHTML += `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${new Date(row[2]).toLocaleDateString()}</td></tr>`;
+            total += parseInt(row[1]);
+        });
 
-  function updateProgress(total) {
+        updateProgress(total);
+        drawChart(total);
+    } catch (error) {
+        console.error("Error loading data:", error);
+    }
+}
+
+function updateProgress(total) {
     const percentage = (total / 75000) * 100;
     document.getElementById("progressBar").style.width = percentage + "%";
     document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
-  }
+}
 
-  function drawChart(total) {
+function drawChart(total) {
     const ctx = document.getElementById("myChart").getContext("2d");
     new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["Gesamt-Höhenmeter"],
-        datasets: [{ label: "Fortschritt", data: [total], backgroundColor: "#4caf50" }]
-      }
+        type: "bar",
+        data: {
+            labels: ["Gesamt-Höhenmeter"],
+            datasets: [{ label: "Fortschritt", data: [total], backgroundColor: "#4caf50" }]
+        }
     });
-  }
+}
 
-  loadData();
+loadData();
+
 </script>
 </body>
 </html>
