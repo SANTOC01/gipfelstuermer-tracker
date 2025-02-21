@@ -111,17 +111,27 @@
                 type: "line",
                 data: {
                     labels: ["Start", "10k", "25k", "50k", "75k"],
-                    datasets: [{
-                        label: "Höhenmeter Fortschritt",
-                        data: [total, 10000, 25000, 50000, 75000],
-                        borderColor: "#4caf50",
-                        backgroundColor: "rgba(76, 175, 80, 0.4)",
-                        fill: true,
-                        tension: 0.4,
-                        pointStyle: 'triangle',
-                        pointRadius: [5, 5, 5, 5, 5],
-                        pointBackgroundColor: ["red", "blue", "yellow", "orange", "black"]
-                    }]
+                    datasets: [
+                        {
+                            label: "Ziele",
+                            data: [0, 10000, 25000, 50000, 75000],
+                            borderColor: "brown",
+                            backgroundColor: "rgba(165, 42, 42, 0.2)",
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: "Fortschritt",
+                            data: [0, total],
+                            borderColor: "green",
+                            backgroundColor: "rgba(76, 175, 80, 0.4)",
+                            fill: true,
+                            tension: 0.4,
+                            pointStyle: 'triangle',
+                            pointRadius: [5, 5],
+                            pointBackgroundColor: ["green", "green"]
+                        }
+                    ]
                 },
                 options: {
                     plugins: {
