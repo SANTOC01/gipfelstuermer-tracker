@@ -55,11 +55,10 @@
     }
 
     await fetch(sheetURL, {
-    method: "POST",
-    mode: "cors",
-    body: JSON.stringify({ name, hohenmeter }),
-    headers: { "Content-Type": "application/json" }
-});
+      method: "POST",
+      mode: "cors",
+      body: JSON.stringify({ name, hohenmeter }),
+      headers: { "Content-Type": "application/json" }
     });
 
     alert("Eingetragen! Danke fürs Mitmachen! 🎉");
