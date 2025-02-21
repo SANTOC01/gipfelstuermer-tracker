@@ -43,7 +43,7 @@
 </ul>
 
 <script>
-  const sheetURL = "https://script.google.com/macros/s/AKfycbxfWFD-cyJWXY9v6p2uNxaZkpMGjEQfoIIbTKb671hvRBUTu3qM37oSDQVxU9JxB-eD/exec";
+  const sheetURL = "https://script.google.com/macros/s/AKfycby07x42mkOL6t3IcfrgsoUbLsaBLRj9Dx7FvFmX9TGnWsab4wxl8D9ay3Vgob_6EEGE/exec";
 
   async function submitData() {
     const name = document.getElementById("name").value;
@@ -59,10 +59,12 @@
   mode: "cors",
   headers: {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*"
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type"
   },
   body: JSON.stringify({ name, hohenmeter })
 });
+
 
 
     alert("Eingetragen! Danke fürs Mitmachen! 🎉");
