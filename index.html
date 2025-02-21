@@ -12,12 +12,12 @@
         th, td { border: 1px solid black; padding: 8px; background: white; }
         canvas { margin-top: 20px; }
         .progress-bar { width: 100%; background: #ddd; border-radius: 20px; }
-        .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; }
-        .achieved { color: green; font-weight: bold; }
+        .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; transition: width 0.5s; }
+        .goal { font-size: 20px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <h1>🏃 Gipfelstürmer Event 2025 🌄️</h1>
+    <h1>🏃 Gipfelstürmer Event 2025 🏔️</h1>
     <p>Gemeinsam sammeln wir 75.000 Höhenmeter bis zum 27.07.2025!</p>
     
     <input type="text" id="name" placeholder="Dein Name">
@@ -35,19 +35,20 @@
     </div>
     <canvas id="myChart"></canvas>
     
-    <h2>🏆 Erreichte Ziele</h2>
-    <p id="lastGoal">Letztes Ziel: Noch keins erreicht!</p>
-    <ul id="goalsList">
-        <li data-goal="10000">🎭 <b>10.000 HM</b> → Trainer im Kostüm</li>
-        <li data-goal="25000">🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</li>
-        <li data-goal="50000">🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</li>
-        <li data-goal="75000">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</li>
+    <h2 class="goal" id="latestGoal">🏆 Letztes erreichtes Ziel: -</h2>
+    
+    <h2>🏆 Belohnungen</h2>
+    <ul id="goalList">
+        <li id="goal1">🎭 <b>10.000 HM</b> → Trainer im Kostüm</li>
+        <li id="goal2">🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</li>
+        <li id="goal3">🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</li>
+        <li id="goal4">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</li>
     </ul>
     
     <script>
         const sheetURL = "https://script.google.com/macros/s/AKfycbxrWgd0RYqOA9lb6sgWb_Zo09XCbbwQBWs51ksKF6_xduKWJctC5OhdGxoPC9Icxcv1/exec";
 
-        async function submitData() {
+        function submitData() {
             const name = document.getElementById("name").value;
             const hohenmeter = document.getElementById("hohenmeter").value;
             
@@ -58,9 +59,9 @@
             
             window.location.href = `${sheetURL}?name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`;
         }
-
+        
         async function loadData() {
-            const response = await fetch(sheetURL + "?action=get");
+            const response = await fetch(sheetURL);
             const data = await response.json();
             const table = document.getElementById("dataTable");
             
@@ -80,13 +81,13 @@
             drawChart(total);
             checkGoals(total);
         }
-
+        
         function updateProgress(total) {
             const percentage = (total / 75000) * 100;
             document.getElementById("progressBar").style.width = percentage + "%";
             document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
         }
-
+        
         function drawChart(total) {
             const ctx = document.getElementById("myChart").getContext("2d");
             new Chart(ctx, {
@@ -97,18 +98,17 @@
                 }
             });
         }
-
+        
         function checkGoals(total) {
-            const goals = document.querySelectorAll("#goalsList li");
-            let lastGoal = "Noch keins erreicht!";
-            goals.forEach(goal => {
-                const goalValue = parseInt(goal.getAttribute("data-goal"));
-                if (total >= goalValue) {
-                    goal.classList.add("achieved");
-                    lastGoal = goal.innerHTML;
+            const goals = [10000, 25000, 50000, 75000];
+            let lastGoal = "-";
+            goals.forEach((goal, index) => {
+                if (total >= goal) {
+                    document.getElementById(`goal${index+1}`).style.color = "green";
+                    lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
                 }
             });
-            document.getElementById("lastGoal").innerHTML = `Letztes Ziel: ${lastGoal}`;
+            document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
         }
         
         loadData();
