@@ -43,7 +43,7 @@
 </ul>
 
 <script>
-  const sheetURL = "https://script.google.com/macros/s/AKfycbwIwgm1fs0uR6bAFMnHb0EN4f2EPqFM3S1FOyXA5cgywV7NSYH2hhVvt547hpwSDg0F/exec";
+  const sheetURL = "https://script.google.com/macros/s/AKfycbw_1BCoWw3k1VKU1VJKxVMEdW535H_y4BXh9Io2vj4EiMMn-7kga2a0hOcaKxQhlAtu/exec";
 
   async function submitData() {
     const name = document.getElementById("name").value;
@@ -55,13 +55,13 @@
     }
 
     await fetch(sheetURL, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ name, hohenmeter })
-    });
+  method: "POST",
+  mode: "cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ name, hohenmeter })
+});
 
     alert("Eingetragen! Danke fürs Mitmachen! 🎉");
     location.reload();
