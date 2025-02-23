@@ -102,8 +102,6 @@
       document.getElementById("totalHM").textContent = total;
     }
     
-    // This function computes the points along the mountain (fixed) and then
-    // interpolates a progress path (filled with green) up to the current total.
     function drawChart(total) {
       const ctx = document.getElementById("myChart").getContext("2d");
       if (chart) {
@@ -143,29 +141,24 @@
         }
       }
       
-      // Prepare an array of point styles for the progress dataset so that the last point uses the emoji marker.
-      const pointStyles = progressData.map((pt, index) =>
-        index === progressData.length - 1 ? "🏃‍➡️" : "circle"
-      );
+      // Update progress dataset to show only the current point with the runner emoji.
+      const lastPoint = progressData[progressData.length - 1];
+      const currentProgressData = [lastPoint];
       
-      // Create the chart with two datasets:
-      //  • The green progress path drawn on top (z-index: 2)
-      //  • The fixed mountain shown in a light brown (z-index: 1)
       chart = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
             {
               label: "Fortschritt",
-              data: progressData,
+              data: currentProgressData,
               borderColor: "green",
               backgroundColor: "rgba(0, 128, 0, 0.4)",
               fill: true,
               tension: 0.4,
               pointBackgroundColor: "green",
-              pointRadius: 6,
-              // Supply the custom point style array; the last point will show the emoji marker.
-              pointStyle: pointStyles,
+              pointRadius: 10,
+              pointStyle: "🏃‍➡️",
               borderWidth: 2,
               z: 2
             },
@@ -182,59 +175,59 @@
             }
           ]
         },
+
         options: {
-          plugins: {
-            legend: { display: false }
-          },
-          parsing: false,
-          scales: {
-            x: {
-              type: "linear",
-              min: 0,
-              max: 75000,
-              ticks: {
-                // Display custom labels where appropriate
-                callback: function(value) {
-                  if (value === 0) return "Start";
-                  if (value === 10000) return "10k";
-                  if (value === 25000) return "25k";
-                  if (value === 50000) return "50k";
-                  if (value === 75000) return "75k";
-                  return value;
-                }
-              }
-            },
-            y: {
-              min: 0,
-              max: 75000,
-              ticks: {
-                callback: function(value) { return value; }
-              }
-            }
-          }
+  plugins: {
+    legend: { display: false }
+  },
+  parsing: false,
+  scales: {
+    x: {
+      type: "linear",
+      min: 0,
+      max: 75000,
+      ticks: {
+        callback: function(value) {
+          if (value === 0) return "Start";
+          if (value === 10000) return "10k";
+          if (value === 25000) return "25k";
+          if (value === 50000) return "50k";
+          if (value === 75000) return "75k";
+          return value;
         }
-      });
-    }
-    
-    function checkGoals(total) {
-      const goals = [10000, 25000, 50000, 75000];
-      let lastGoal = "-";
-      goals.forEach((goal, index) => {
-        if (total >= goal) {
-          document.getElementById(`goal${index+1}`).style.color = "green";
-          lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
-        }
-      });
-      if (lastGoal === "-") {
-        document.getElementById("goalBanner").innerHTML = "🎉 Noch kein Ziel erreicht!";
-      } else {
-        document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
       }
-      document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
-      document.getElementById("goalBanner").style.display = "block";
+    },
+    y: {
+      min: 0,
+      max: 75000,
+      ticks: {
+        callback: function(value) { return value; }
+      }
     }
-    
-    loadData();
-  </script>
+  }
+}
+});
+}
+
+function checkGoals(total) {
+  const goals = [10000, 25000, 50000, 75000];
+  let lastGoal = "-";
+  goals.forEach((goal, index) => {
+    if (total >= goal) {
+      document.getElementById(`goal${index+1}`).style.color = "green";
+      lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
+    }
+  });
+  if (lastGoal === "-") {
+    document.getElementById("goalBanner").innerHTML = "🎉 Noch kein Ziel erreicht!";
+  } else {
+    document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
+  }
+  document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
+  document.getElementById("goalBanner").style.display = "block";
+}
+
+loadData();
+</script>
 </body>
 </html>
