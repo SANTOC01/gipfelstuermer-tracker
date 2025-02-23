@@ -61,19 +61,19 @@ async function submitData() {
         return;
     }
     
-    await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    await fetch(${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)});
     alert("Eingetragen! Danke fürs Mitmachen! 🎉");
     loadData();
 }
 
 async function deleteData(name, hohenmeter) {
-    await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    await fetch(${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)});
     alert("Eintrag gelöscht!");
     loadData();
 }
 
 async function loadData() {
-    const response = await fetch(`${sheetURL}?action=get`);
+    const response = await fetch(${sheetURL}?action=get);
     const data = await response.json();
     const table = document.getElementById("dataTable");
     
@@ -81,12 +81,12 @@ async function loadData() {
     let total = 0;
     
     data.slice(1).forEach(row => {
-        table.innerHTML += `<tr>
+        table.innerHTML += <tr>
             <td>${row[0]}</td>
             <td>${row[1]}</td>
             <td>${new Date(row[2]).toLocaleDateString()}</td>
             <td><button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button></td>
-        </tr>`;
+        </tr>;
         total += parseInt(row[1]);
     });
     
@@ -115,24 +115,24 @@ function drawChart(total) {
                 {
                     label: "Ziele",
                     data: [0, 8000, 15000, 40000, 75000],
-                    borderColor: "saddlebrown",  // More brownish color
-                    backgroundColor: "rgba(139, 69, 19, 0.2)",  // Lighter brown shade
+                    borderColor: "brown",
+                    backgroundColor: "rgba(165, 42, 42, 0.2)",
                     fill: true,
                     tension: 0.4,
                     pointStyle: 'circle',
                     pointRadius: 5,
-                    pointBackgroundColor: "saddlebrown"
+                    pointBackgroundColor: "brown"
                 },
                 {
                     label: "Fortschritt",
-                    data: Array.from({ length: 5 }, (_, i) => i * (total / 75000) * 75000),  // Update this for proper dynamic growth
-                    borderColor: "green",  // Green color for progress
-                    backgroundColor: "rgba(0, 128, 0, 0.4)", // Transparent green
+                    data: [0, total],
+                    borderColor: "#8B4513",
+                    backgroundColor: "rgba(139, 69, 19, 0.4)",
                     fill: true,
                     tension: 0.4,
                     pointStyle: 'triangle',
                     pointRadius: 5,
-                    pointBackgroundColor: "green"
+                    pointBackgroundColor: "#8B4513"
                 }
             ]
         },
@@ -146,24 +146,10 @@ function drawChart(total) {
                 y: {
                     suggestedMin: 0,
                     suggestedMax: 85000
-                },
-                x: {
-                    type: 'linear',
-                    position: 'bottom'
                 }
             }
         }
     });
-    // Add marker at the current progress
-    const markerData = [total];
-    chart.data.datasets.push({
-        label: "Aktueller Fortschritt",
-        data: markerData,
-        backgroundColor: "red",
-        pointRadius: 10,
-        pointStyle: "circle"
-    });
-    chart.update();
 }
 
 function checkGoals(total) {
@@ -171,16 +157,16 @@ function checkGoals(total) {
     let lastGoal = "-";
     goals.forEach((goal, index) => {
         if (total >= goal) {
-            document.getElementById(`goal${index+1}`).style.color = "green";
-            lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
+            document.getElementById(goal${index+1}).style.color = "green";
+            lastGoal = document.getElementById(goal${index+1}).innerHTML;
         }
     });
     if (lastGoal === "-") {
         document.getElementById("goalBanner").innerHTML = "🎉 Noch kein Ziel erreicht!";
     } else {
-        document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
+        document.getElementById("goalBanner").innerHTML = 🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!;
     }
-    document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
+    document.getElementById("latestGoal").innerHTML = 🏆 Letztes erreichtes Ziel: ${lastGoal};
     document.getElementById("goalBanner").style.display = "block";
 }
 
