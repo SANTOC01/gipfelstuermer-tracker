@@ -79,6 +79,7 @@
 
         table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
         let total = 0;
+        let progressData = [];
 
         data.slice(1).forEach(row => {
             table.innerHTML += `<tr>
@@ -88,10 +89,11 @@
                 <td><button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button></td>
             </tr>`;
             total += parseInt(row[1]);
+            progressData.push(parseInt(row[1]));
         });
 
         updateProgress(total);
-        drawChart(total);
+        drawChart(progressData);
         checkGoals(total);
     }
 
@@ -102,15 +104,23 @@
         document.getElementById("totalHM").textContent = total;
     }
 
-    function drawChart(total) {
+    function drawChart(progressData) {
         const ctx = document.getElementById("myChart").getContext("2d");
         if (chart) {
             chart.destroy();
         }
+        
+        // Create an array for cumulative progress
+        let cumulativeProgress = progressData.reduce((acc, cur) => {
+            let last = acc.length > 0 ? acc[acc.length - 1] : 0;
+            acc.push(last + cur);
+            return acc;
+        }, []);
+
         chart = new Chart(ctx, {
             type: "line",
             data: {
-                labels: ["Start", "10k", "25k", "50k", "75k"],
+                labels: ["Start", ...cumulativeProgress.map((_, i) => `Point ${i + 1}`), "75k"],
                 datasets: [
                     {
                         label: "Ziele",
@@ -125,7 +135,7 @@
                     },
                     {
                         label: "Fortschritt",
-                        data: [0, total],
+                        data: [0, ...cumulativeProgress, cumulativeProgress[cumulativeProgress.length - 1]],
                         borderColor: "green",
                         backgroundColor: "rgba(0, 128, 0, 0.4)",
                         fill: true,
@@ -192,6 +202,7 @@
 
     loadData();
 </script>
+
 
 </body>
 </html>
