@@ -24,7 +24,7 @@
   <div id="goalBanner" class="banner"></div>
   
   <input type="text" id="name" placeholder="Dein Name" />
-  <input type="number" id="hohenmeter" placeholder="Höhenmeter" />
+  <input type="number" id="hohenmeter" placeholder="Höhenmeter" max="1200" oninput="validateHohenmeter()" />
   <button onclick="submitData()">Absenden</button>
   
   <h2>📋 Letzte Einträge</h2>
@@ -71,6 +71,16 @@
       alert("Eintrag gelöscht!");
       loadData();
     }
+
+    function validateHohenmeter() {
+  const hmInput = document.getElementById("hohenmeter");
+  const value = Number(hmInput.value);
+  if (value > 1200) {
+    alert("Sei ehrlich 🤥😏");
+    // Optionally, to enforce the limit, you can reset the input:
+    // hmInput.value = 1200;
+  }
+}
     
     async function loadData() {
       const response = await fetch(`${sheetURL}?action=get`);
@@ -225,7 +235,7 @@ function checkGoals(total) {
     }
   });
   if (lastGoal === "-") {
-    document.getElementById("goalBanner").innerHTML = "🎉 Noch kein Ziel erreicht!";
+    document.getElementById("goalBanner").innerHTML = "Noch kein Ziel erreicht 😮";
   } else {
     document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
   }
