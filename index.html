@@ -49,19 +49,19 @@
     
     </ul>
     
-    <script>
+   <script>
     const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
     let chart;
 
     async function submitData() {
         const name = document.getElementById("name").value;
         const hohenmeter = document.getElementById("hohenmeter").value;
-
+        
         if (!name || !hohenmeter) {
             alert("Bitte beide Felder ausfüllen!");
             return;
         }
-
+        
         await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
         alert("Eingetragen! Danke fürs Mitmachen! 🎉");
         loadData();
@@ -77,7 +77,7 @@
         const response = await fetch(`${sheetURL}?action=get`);
         const data = await response.json();
         const table = document.getElementById("dataTable");
-
+        
         table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
         let total = 0;
         let progressData = [];
@@ -92,7 +92,7 @@
             total += parseInt(row[1]);
             progressData.push(parseInt(row[1]));
         });
-
+        
         updateProgress(total);
         drawChart(progressData);
         checkGoals(total);
@@ -203,7 +203,6 @@
 
     loadData();
 </script>
-
 
 </body>
 </html>
