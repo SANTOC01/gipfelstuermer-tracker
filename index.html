@@ -150,28 +150,27 @@
   data: {
     datasets: [
       {
-        // Dynamic progress dataset that fills from the baseline up to the current progress
+        // Dynamic progress dataset (green)
         label: "Fortschritt",
-        data: progressData, // progressData computed as described above
+        data: progressData, // progressData should contain all computed points along the mountain curve
         borderColor: "green",
-        backgroundColor: "rgba(0, 128, 0, 0.4)",
-        fill: true, // fills from the line down to the chart’s baseline (y=0)
+        backgroundColor: "rgba(0,128,0,0.4)",
+        fill: true, // fills the area under the line
         tension: 0.4,
         borderWidth: 2,
-        // Only show a marker for the last data point (the current progress),
-        // the rest of the points remain invisible.
-        pointRadius: function(context) {
+        // Only show a marker for the last (current) point
+        pointRadius: function (context) {
           return (context.dataIndex === context.dataset.data.length - 1) ? 10 : 0;
         },
-        pointStyle: function(context) {
-          return (context.dataIndex === context.dataset.data.length - 1) ? "🏃‍➡️" : undefined;
-        },
+        pointBackgroundColor: "green",
+        // Use a full filled circle for the current point marker
+        pointStyle: "triangle",
         z: 2
       },
       {
-        // Fixed mountain outline (brown) for the target shape
+        // Fixed mountain outline dataset (brown)
         label: "Ziele",
-        data: mountainData, // mountainData is defined as your fixed points
+        data: mountainData, // mountainData defined as your fixed mountain points
         borderColor: "saddlebrown",
         backgroundColor: "rgba(139, 69, 19, 0.2)",
         fill: true,
