@@ -55,12 +55,12 @@
     async function submitData() {
         const name = document.getElementById("name").value;
         const hohenmeter = document.getElementById("hohenmeter").value;
-        
+
         if (!name || !hohenmeter) {
             alert("Bitte beide Felder ausfüllen!");
             return;
         }
-        
+
         await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
         alert("Eingetragen! Danke fürs Mitmachen! 🎉");
         loadData();
@@ -76,10 +76,10 @@
         const response = await fetch(`${sheetURL}?action=get`);
         const data = await response.json();
         const table = document.getElementById("dataTable");
-        
+
         table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
         let total = 0;
-        
+
         data.slice(1).forEach(row => {
             table.innerHTML += `<tr>
                 <td>${row[0]}</td>
@@ -89,7 +89,7 @@
             </tr>`;
             total += parseInt(row[1]);
         });
-        
+
         updateProgress(total);
         drawChart(total);
         checkGoals(total);
@@ -166,8 +166,8 @@
         const meta = chart.getDatasetMeta(1);
         meta.data.forEach((point, index) => {
             if (index === meta.data.length - 1) {
-                const ctx = point.getProps(['x', 'y'], true);
-                chart.ctx.fillText(runnerEmoji, ctx.x, ctx.y);
+                const props = point.getProps(['x', 'y'], true);
+                chart.ctx.fillText(runnerEmoji, props.x, props.y);
             }
         });
     }
@@ -177,8 +177,8 @@
         let lastGoal = "-";
         goals.forEach((goal, index) => {
             if (total >= goal) {
-                document.getElementById(`goal${index+1}`).style.color = "green";
-                lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
+                document.getElementById(`goal${index + 1}`).style.color = "green";
+                lastGoal = document.getElementById(`goal${index + 1}`).innerHTML;
             }
         });
         if (lastGoal === "-") {
