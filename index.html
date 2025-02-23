@@ -205,35 +205,38 @@
     ]
   },
   options: {
-    plugins: {
-      legend: { display: false }
+  plugins: {
+    // Hide the legend that would show "Fortschritt" and "Ziele"
+    legend: {
+      display: false
+    }
+  },
+  parsing: false,
+  scales: {
+    x: {
+      type: "linear",
+      min: 0,
+      max: 75000,
+      ticks: {
+        callback: function(value) {
+          if (value === 0) return "Start";
+          if (value === 10000) return "10k";
+          if (value === 25000) return "25k";
+          if (value === 50000) return "50k"; 
+          if (value === 75000) return "75k";
+          return value;
+        }
+      }
     },
-    parsing: false,
-    scales: {
-      x: {
-        type: "linear",
-        min: 0,
-        max: 75000,
-        ticks: {
-          callback: function(value) {
-            if (value === 0) return "Start";
-            if (value === 10000) return "10k";
-            if (value === 25000) return "25k";
-            if (value === 50000) return "50k";
-            if (value === 75000) return "75k";
-            return value;
-          }
-        }
-      },
-      y: {
-        min: 0,
-        max: 75000,
-        ticks: {
-          callback: function(value) { return value; }
-        }
+    y: {
+      min: 0,
+      max: 75000,
+      ticks: {
+        callback: function(value) { return value; }
       }
     }
   }
+}
 });
 }
 
