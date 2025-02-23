@@ -48,122 +48,115 @@
         <li id="goal4">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</li>
     </ul>
 
-   <script>
-    const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
-    let chart;
+    <script>
+        const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
+        let chart;
 
-    async function submitData() {
-        const name = document.getElementById("name").value;
-        const hohenmeter = document.getElementById("hohenmeter").value;
-        
-        if (!name || !hohenmeter) {
-            alert("Bitte beide Felder ausfüllen!");
-            return;
-        }
-        
-        await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-        alert("Eingetragen! Danke fürs Mitmachen! 🎉");
-        loadData();
-    }
-
-    async function deleteData(name, hohenmeter) {
-        await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-        alert("Eintrag gelöscht!");
-        loadData();
-    }
-
-    async function loadData() {
-        const response = await fetch(`${sheetURL}?action=get`);
-        const data = await response.json();
-        const table = document.getElementById("dataTable");
-        
-        table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
-        let total = 0;
-        let progressData = [];
-
-        data.slice(1).forEach(row => {
-            table.innerHTML += `<tr>
-                <td>${row[0]}</td>
-                <td>${row[1]}</td>
-                <td>${new Date(row[2]).toLocaleDateString()}</td>
-                <td><button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button></td>
-            </tr>`;
-            total += parseInt(row[1]);
-            progressData.push(parseInt(row[1]));
-        });
-        
-        updateProgress(total);
-        drawChart(progressData);
-        checkGoals(total);
-    }
-
-    function updateProgress(total) {
-        const percentage = (total / 75000) * 100;
-        document.getElementById("progressBar").style.width = percentage + "%";
-        document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
-        document.getElementById("totalHM").textContent = total;
-    }
-
-    function drawChart(progressData) {
-        const ctx = document.getElementById("myChart").getContext("2d");
-        if (chart) {
-            chart.destroy();
-        }
-        
-        // Create an array for cumulative progress
-        let cumulativeProgress = progressData.reduce((acc, cur) => {
-            let last = acc.length > 0 ? acc[acc.length - 1] : 0;
-            acc.push(last + cur);
-            return acc;
-        }, []);
-
-        chart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: ["Start", ...cumulativeProgress.map((_, i) => `Point ${i + 1}`), "75k"],
-                datasets: [
-                    {
-                        label: "Ziele",
-                        data: [0, 10000, 25000, 50000, 75000],
-                        borderColor: "saddlebrown",
-                        backgroundColor: "rgba(139, 69, 19, 0.2)",
-                        fill: true,
-                        tension: 0.4,
-                        pointStyle: 'circle',
-                        pointRadius: 5,
-                        pointBackgroundColor: "saddlebrown"
-                    },
-                    {
-                        label: "Fortschritt",
-                        data: [0, ...cumulativeProgress, cumulativeProgress[cumulativeProgress.length - 1]],
-                        borderColor: "green",
-                        backgroundColor: "rgba(0, 128, 0, 0.4)",
-                        fill: true,
-                        tension: 0.4,
-                        pointStyle: 'triangle',
-                        pointRadius: 5,
-                        pointBackgroundColor: "green"
-                    }
-                ]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        suggestedMin: 0,
-                        suggestedMax: 80000
-                    },
-                    x: {
-                        type: 'linear',
-                        position: 'bottom'
-                    }
-                }
+        async function submitData() {
+            const name = document.getElementById("name").value;
+            const hohenmeter = document.getElementById("hohenmeter").value;
+            
+            if (!name || !hohenmeter) {
+                alert("Bitte beide Felder ausfüllen!");
+                return;
             }
-        });
+            
+            await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+            alert("Eingetragen! Danke fürs Mitmachen! 🎉");
+            loadData();
+        }
+
+        async function deleteData(name, hohenmeter) {
+            await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+            alert("Eintrag gelöscht!");
+            loadData();
+        }
+
+        async function loadData() {
+            const response = await fetch(`${sheetURL}?action=get`);
+            const data = await response.json();
+            const table = document.getElementById("dataTable");
+            
+            table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
+            let total = 0;
+            let progressData = [];
+
+            data.slice(1).forEach(row => {
+                table.innerHTML += `<tr>
+                    <td>${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${new Date(row[2]).toLocaleDateString()}</td>
+                    <td><button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button></td>
+                </tr>`;
+                total += parseInt(row[1]);
+                progressData.push(parseInt(row[1]));
+            });
+            
+            updateProgress(total);
+            drawChart(progressData);
+            checkGoals(total);
+        }
+
+        function updateProgress(total) {
+            const percentage = (total / 75000) * 100;
+            document.getElementById("progressBar").style.width = percentage + "%";
+            document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
+            document.getElementById("totalHM").textContent = total;
+        }
+
+        function drawChart(progressData) {
+            const ctx = document.getElementById("myChart").getContext("2d");
+            if (chart) {
+                chart.destroy();
+            }
+            
+            // Create an array for cumulative progress
+            let cumulativeProgress = progressData.reduce((acc, cur) => {
+                let last = acc.length > 0 ? acc[acc.length - 1] : 0;
+                acc.push(last + cur);
+                return acc;
+            }, []);
+
+            chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: ["Start", ...cumulativeProgress.map((_, i) => `Point ${i + 1}`), "75k"],
+                    datasets: [
+                        {
+                            label: "Ziele",
+                            data: [0, 10000, 25000, 50000, 75000],
+                            borderColor: "saddlebrown",
+                            backgroundColor: "rgba(139, 69, 19, 0.2)",
+                            fill: true,
+                            tension: 0.4,
+                            pointStyle: 'circle',
+                            pointRadius: 5,
+                            pointBackgroundColor: "saddlebrown"
+                        },
+                        {
+                            label: "Fortschritt",
+                            data: [0, ...cumulativeProgress, cumulativeProgress[cumulativeProgress.length - 1]],
+                            borderColor: "green",
+                            backgroundColor: "rgba(0, 128, 0, 0.4)",
+                            fill: true,
+                            tension: 0.4,
+                            pointStyle: 'triangle',
+                            pointRadius: 5,
+                            pointBackgroundColor: "green"
+                        }
+                    ]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            suggestedMin: 0,
+                            suggestedMax: 80000
+                        
 
         // Add emoji marker (🏃‍➡️) for current progress
         const runnerEmoji = '🏃‍➡️';
