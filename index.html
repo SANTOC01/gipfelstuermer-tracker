@@ -115,17 +115,17 @@ function drawChart(total) {
                 {
                     label: "Ziele",
                     data: [0, 8000, 15000, 40000, 75000],
-                    borderColor: "brown",
-                    backgroundColor: "rgba(165, 42, 42, 0.2)",
+                    borderColor: "saddlebrown",  // More brownish color
+                    backgroundColor: "rgba(139, 69, 19, 0.2)",  // Lighter brown shade
                     fill: true,
                     tension: 0.4,
                     pointStyle: 'circle',
                     pointRadius: 5,
-                    pointBackgroundColor: "brown"
+                    pointBackgroundColor: "saddlebrown"
                 },
                 {
                     label: "Fortschritt",
-                    data: [0, total],
+                    data: Array.from({ length: 5 }, (_, i) => i * (total / 75000) * 75000),  // Update this for proper dynamic growth
                     borderColor: "green",  // Green color for progress
                     backgroundColor: "rgba(0, 128, 0, 0.4)", // Transparent green
                     fill: true,
@@ -146,10 +146,24 @@ function drawChart(total) {
                 y: {
                     suggestedMin: 0,
                     suggestedMax: 85000
+                },
+                x: {
+                    type: 'linear',
+                    position: 'bottom'
                 }
             }
         }
     });
+    // Add marker at the current progress
+    const markerData = [total];
+    chart.data.datasets.push({
+        label: "Aktueller Fortschritt",
+        data: markerData,
+        backgroundColor: "red",
+        pointRadius: 10,
+        pointStyle: "circle"
+    });
+    chart.update();
 }
 
 function checkGoals(total) {
