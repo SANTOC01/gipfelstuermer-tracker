@@ -183,18 +183,25 @@
         z: 2
       },
       {
-        // Fixed mountain outline dataset (brown)
-        label: "Ziele",
-        data: mountainData, // mountainData defined as your fixed mountain points
-        borderColor: "saddlebrown",
-        backgroundColor: "rgba(139, 69, 19, 0.2)",
-        fill: true,
-        tension: 0.4,
-        borderWidth: 2,
-        pointRadius: 4,
-        pointBackgroundColor: "saddlebrown",
-        z: 1
-      }
+  // Fixed mountain outline dataset (brown)
+  label: "Ziele",
+  data: mountainData, // your mountainData array remains unchanged
+  borderColor: "saddlebrown",
+  backgroundColor: "rgba(139, 69, 19, 0.2)",
+  fill: true,
+  tension: 0.4,
+  borderWidth: 2,
+  pointRadius: function(context) {
+    const xValue = context.parsed.x;
+    // Only display a point if x is one of the milestone values.
+    if (xValue === 10000 || xValue === 25000 || xValue === 50000 || xValue === 75000) {
+      return 4;
+    }
+    return 0;
+  },
+  pointBackgroundColor: "saddlebrown",
+  z: 1
+}
     ]
   },
   options: {
