@@ -82,7 +82,7 @@
   }
 }
     
-    async function loadData() {
+   async function loadData() {
   const response = await fetch(`${sheetURL}?action=get`);
   const data = await response.json();
   const table = document.getElementById("dataTable");
@@ -108,11 +108,6 @@
   checkGoals(total);
 }
 
-  
-  updateProgress(total);
-  drawChart(total);
-  checkGoals(total);
-}
 
     
     function updateProgress(total) {
