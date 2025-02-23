@@ -140,6 +140,17 @@ function drawChart(total) {
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            // Custom tooltip showing 🏃‍➡️ at the current position
+                            if (tooltipItem.dataIndex === 1) { // Ensure it's showing at the dynamic point
+                                return `🏃‍➡️ ${tooltipItem.raw} HM`; // Show 🏃‍➡️ at the progress point
+                            }
+                            return tooltipItem.raw + " HM";
+                        }
+                    }
                 }
             },
             scales: {
@@ -154,15 +165,6 @@ function drawChart(total) {
             }
         }
     });
-    // Add marker at the current progress
-    chart.data.datasets.push({
-        label: "Aktueller Fortschritt",
-        data: [{ x: total, y: total }],
-        backgroundColor: "red",
-        pointRadius: 10,
-        pointStyle: "circle"
-    });
-    chart.update();
 }
 
 function checkGoals(total) {
