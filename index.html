@@ -87,22 +87,27 @@
   const data = await response.json();
   const table = document.getElementById("dataTable");
   
+  // Extract all entries (skip the header row) and reverse them:
+  const entries = data.slice(1).reverse(); // Now, newest entries come first
+  
   table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
   let total = 0;
 
-  // Create an entries array (assumes data[0] is a header row)
-  const entries = data.slice(1);
-  const lastRowIndex = entries.length - 1;
-
   entries.forEach((row, index) => {
+    total += parseInt(row[1]);
     table.innerHTML += `<tr>
       <td>${row[0]}</td>
       <td>${row[1]}</td>
       <td>${new Date(row[2]).toLocaleDateString()}</td>
-      <td>${index === lastRowIndex ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>` : ""}</td>
+      <td>${index === 0 ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>` : ""}</td>
     </tr>`;
-    total += parseInt(row[1]);
   });
+  
+  updateProgress(total);
+  drawChart(total);
+  checkGoals(total);
+}
+
   
   updateProgress(total);
   drawChart(total);
