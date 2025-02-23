@@ -145,67 +145,74 @@
       const lastPoint = progressData[progressData.length - 1];
       const currentProgressData = [lastPoint];
       
-      chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          datasets: [
-            {
-              label: "Fortschritt",
-              data: currentProgressData,
-              borderColor: "green",
-              backgroundColor: "rgba(0, 128, 0, 0.4)",
-              fill: true,
-              tension: 0.4,
-              pointBackgroundColor: "green",
-              pointRadius: 10,
-              pointStyle: "🏃‍➡️",
-              borderWidth: 2,
-              z: 2
-            },
-            {
-              label: "Ziele",
-              data: mountainData,
-              borderColor: "saddlebrown",
-              backgroundColor: "rgba(139, 69, 19, 0.2)",
-              fill: true,
-              tension: 0.4,
-              pointBackgroundColor: "saddlebrown",
-              borderWidth: 2,
-              z: 1
-            }
-          ]
+     chart = new Chart(ctx, {
+  type: "line",
+  data: {
+    datasets: [
+      {
+        // Dynamic progress dataset that fills from the baseline up to the current progress
+        label: "Fortschritt",
+        data: progressData, // progressData computed as described above
+        borderColor: "green",
+        backgroundColor: "rgba(0, 128, 0, 0.4)",
+        fill: true, // fills from the line down to the chart’s baseline (y=0)
+        tension: 0.4,
+        borderWidth: 2,
+        // Only show a marker for the last data point (the current progress),
+        // the rest of the points remain invisible.
+        pointRadius: function(context) {
+          return (context.dataIndex === context.dataset.data.length - 1) ? 10 : 0;
         },
-
-        options: {
-  plugins: {
-    legend: { display: false }
-  },
-  parsing: false,
-  scales: {
-    x: {
-      type: "linear",
-      min: 0,
-      max: 75000,
-      ticks: {
-        callback: function(value) {
-          if (value === 0) return "Start";
-          if (value === 10000) return "10k";
-          if (value === 25000) return "25k";
-          if (value === 50000) return "50k";
-          if (value === 75000) return "75k";
-          return value;
-        }
+        pointStyle: function(context) {
+          return (context.dataIndex === context.dataset.data.length - 1) ? "🏃‍➡️" : undefined;
+        },
+        z: 2
+      },
+      {
+        // Fixed mountain outline (brown) for the target shape
+        label: "Ziele",
+        data: mountainData, // mountainData is defined as your fixed points
+        borderColor: "saddlebrown",
+        backgroundColor: "rgba(139, 69, 19, 0.2)",
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: "saddlebrown",
+        z: 1
       }
+    ]
+  },
+  options: {
+    plugins: {
+      legend: { display: false }
     },
-    y: {
-      min: 0,
-      max: 75000,
-      ticks: {
-        callback: function(value) { return value; }
+    parsing: false,
+    scales: {
+      x: {
+        type: "linear",
+        min: 0,
+        max: 75000,
+        ticks: {
+          callback: function(value) {
+            if (value === 0) return "Start";
+            if (value === 10000) return "10k";
+            if (value === 25000) return "25k";
+            if (value === 50000) return "50k";
+            if (value === 75000) return "75k";
+            return value;
+          }
+        }
+      },
+      y: {
+        min: 0,
+        max: 75000,
+        ticks: {
+          callback: function(value) { return value; }
+        }
       }
     }
   }
-}
 });
 }
 
