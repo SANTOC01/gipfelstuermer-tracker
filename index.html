@@ -10,7 +10,7 @@
         input, button { margin: 10px; padding: 10px; font-size: 16px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid black; padding: 8px; background: white; }
-        canvas { margin-top: 20px; position: relative; }
+        canvas { margin-top: 20px; }
         .progress-bar { width: 100%; background: #ddd; border-radius: 20px; }
         .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; transition: width 0.5s; }
         .goal { font-size: 20px; font-weight: bold; margin-top: 10px; }
@@ -50,58 +50,140 @@
     
     <script>
         const sheetURL = "https://script.google.com/macros/s/AKfycbz3JyX_QJNnhKJmP7K_rUJ-FprgFd0q--WBGv8_oS1FtqfOZ-pJ0Q0WEWqcxgf2gjP7/exec";
-        let chart;
+let chart; // Declare a variable to hold the chart instance
 
-        async function submitData() {
-            const name = document.getElementById("name").value;
-            const hohenmeter = document.getElementById("hohenmeter").value;
-            
-            if (!name || !hohenmeter) {
-                alert("Bitte beide Felder ausfüllen!");
-                return;
+async function submitData() {
+    const name = document.getElementById("name").value;
+    const hohenmeter = document.getElementById("hohenmeter").value;
+    
+    if (!name || !hohenmeter) {
+        alert("Bitte beide Felder ausfüllen!");
+        return;
+    }
+    
+    await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    alert("Eingetragen! Danke fürs Mitmachen! 🎉");
+    loadData();
+}
+
+async function deleteData(name, hohenmeter) {
+    await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    alert("Eintrag gelöscht!");
+    loadData();
+}
+
+async function loadData() {
+    const response = await fetch(`${sheetURL}?action=get`);
+    const data = await response.json();
+    const table = document.getElementById("dataTable");
+    
+    table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
+    let total = 0;
+    
+    data.slice(1).forEach(row => {
+        table.innerHTML += `<tr>
+            <td>${row[0]}</td>
+            <td>${row[1]}</td>
+            <td>${new Date(row[2]).toLocaleDateString()}</td>
+            <td><button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button></td>
+        </tr>`;
+        total += parseInt(row[1]);
+    });
+    
+    updateProgress(total);
+    drawChart(total);
+    checkGoals(total);
+}
+
+function updateProgress(total) {
+    const percentage = (total / 75000) * 100;
+    document.getElementById("progressBar").style.width = percentage + "%";
+    document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
+    document.getElementById("totalHM").textContent = total;
+}
+
+function drawChart(total) {
+    const ctx = document.getElementById("myChart").getContext("2d");
+    if (chart) { // Check if the chart instance exists
+        chart.destroy(); // Destroy the existing chart instance before creating a new one
+    }
+    chart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: ["Start", "10k", "25k", "50k", "75k"],
+            datasets: [
+                {
+                    label: "Ziele",
+                    data: [0, 8000, 15000, 40000, 75000],
+                    borderColor: "saddlebrown",  // More brownish color
+                    backgroundColor: "rgba(139, 69, 19, 0.2)",  // Lighter brown shade
+                    fill: true,
+                    tension: 0.4,
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointBackgroundColor: "saddlebrown"
+                },
+                {
+                    label: "Fortschritt",
+                    data: [0, total, total, total, total], // Correct dynamic growth
+                    borderColor: "green",  // Green color for progress
+                    backgroundColor: "rgba(0, 128, 0, 0.4)", // Transparent green
+                    fill: true,
+                    tension: 0.4,
+                    pointStyle: 'triangle',
+                    pointRadius: 5,
+                    pointBackgroundColor: "green"
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    suggestedMin: 0,
+                    suggestedMax: 85000
+                },
+                x: {
+                    type: 'linear',
+                    position: 'bottom'
+                }
             }
-            
-            await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-            alert("Eingetragen! Danke fürs Mitmachen! 🎉");
-            loadData();
         }
-        
-        async function deleteData(name, hohenmeter) {
-            await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-            alert("Eintrag gelöscht!");
-            loadData();
+    });
+    // Add marker at the current progress
+    chart.data.datasets.push({
+        label: "Aktueller Fortschritt",
+        data: [{ x: total, y: total }],
+        backgroundColor: "red",
+        pointRadius: 10,
+        pointStyle: "circle"
+    });
+    chart.update();
+}
+
+function checkGoals(total) {
+    const goals = [10000, 25000, 50000, 75000];
+    let lastGoal = "-";
+    goals.forEach((goal, index) => {
+        if (total >= goal) {
+            document.getElementById(`goal${index+1}`).style.color = "green";
+            lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
         }
-        
-        async function loadData() {
-            const response = await fetch(`${sheetURL}?action=get`);
-            const data = await response.json();
-            const table = document.getElementById("dataTable");
-            
-            table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
-            let total = 0;
-            
-            data.slice(1).forEach(row => {
-                table.innerHTML += `<tr>
-                    <td>${row[0]}</td>
-                    <td>${row[1]}</td>
-                    <td>${new Date(row[2]).toLocaleDateString()}</td>
-                    <td><button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button></td>
-                </tr>`;
-                total += parseInt(row[1]);
-            });
-            
-            updateProgress(total);
-            drawChart(total);
-            checkGoals(total);
-        }
-        
-        function updateProgress(total) {
-            document.getElementById("progressBar").style.width = (total / 75000) * 100 + "%";
-            document.getElementById("progressBar").textContent = Math.round((total / 75000) * 100) + "%";
-            document.getElementById("totalHM").textContent = total;
-        }
-        
-        loadData();
+    });
+    if (lastGoal === "-") {
+        document.getElementById("goalBanner").innerHTML = "🎉 Noch kein Ziel erreicht!";
+    } else {
+        document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
+    }
+    document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
+    document.getElementById("goalBanner").style.display = "block";
+}
+
+loadData();
     </script>
 </body>
 </html>
