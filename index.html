@@ -125,7 +125,7 @@ function drawChart(total) {
                 },
                 {
                     label: "Fortschritt",
-                    data: Array.from({ length: 5 }, (_, i) => i * (total / 75000) * 75000),  // Update this for proper dynamic growth
+                    data: [0, total, total, total, total], // Correct dynamic growth
                     borderColor: "green",  // Green color for progress
                     backgroundColor: "rgba(0, 128, 0, 0.4)", // Transparent green
                     fill: true,
@@ -155,10 +155,9 @@ function drawChart(total) {
         }
     });
     // Add marker at the current progress
-    const markerData = [total];
     chart.data.datasets.push({
         label: "Aktueller Fortschritt",
-        data: markerData,
+        data: [{ x: total, y: total }],
         backgroundColor: "red",
         pointRadius: 10,
         pointStyle: "circle"
