@@ -97,18 +97,35 @@
     width: 80%;
     border-radius: 10px;
   }
-  .goal-list { 
-    list-style-type: none; 
-    padding: 0; 
-  }
-  .goal-list li { 
-    display: flex; 
-    align-items: center; 
-    margin-bottom: 10px; 
-  }
-  .goal-list li input { 
-    margin-right: 10px; 
-  }
+  .goal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: lightbrown; /* Light brown to resemble a wooden board */
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
+
+.goal-list {
+  list-style-type: none;
+  padding: 20px;
+  background: white; /* Makes it look like a paper on the wooden board */
+  border-radius: 10px;
+  width: 80%; /* Adjust the width if needed */
+  margin: 0;
+}
+
+.goal-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.goal-list li input {
+  margin-right: 10px;
+}
+
 </style>
 
 
@@ -144,12 +161,14 @@
   <canvas id="myChart"></canvas>
 
   <h2>🏆 Belohnungen</h2>
-<ul id="goalList" class="goal-list">
-  <li><input type="checkbox" id="goal1Check" disabled /><label for="goal1Check">🎭 <b>10.000 HM</b> → Trainer im Kostüm</label></li>
-  <li><input type="checkbox" id="goal2Check" disabled /><label for="goal2Check">🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</label></li>
-  <li><input type="checkbox" id="goal3Check" disabled /><label for="goal3Check">🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</label></li>
-  <li><input type="checkbox" id="goal4Check" disabled /><label for="goal4Check">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</label></li>
-</ul>
+<div class="goal-container">
+  <ul id="goalList" class="goal-list">
+    <li><input type="checkbox" id="goal1Check" disabled /><label for="goal1Check">🎭 <b>10.000 HM</b> → Trainer im Kostüm</label></li>
+    <li><input type="checkbox" id="goal2Check" disabled /><label for="goal2Check">🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</label></li>
+    <li><input type="checkbox" id="goal3Check" disabled /><label for="goal3Check">🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</label></li>
+    <li><input type="checkbox" id="goal4Check" disabled /><label for="goal4Check">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</label></li>
+  </ul>
+</div>
 
   <script>
     const sheetURL = "https://script.google.com/macros/s/AKfycbxbt57SZfghrZTx9FXgl2IkqJfkQzvK1slJDJFE_osfPfJHRXXypsOp-zXRh2d9rzPQ/exec";
@@ -366,19 +385,26 @@ function checkGoals(total) {
 function updateGoalBanner(total) {
   const goals = [10000, 25000, 50000, 75000];
   let lastGoal = "-";
+  let lastReachedGoal = "";
+
   goals.forEach((goal, index) => {
+    const goalCheck = document.getElementById(`goal${index+1}Check`);
     if (total >= goal) {
-      document.getElementById(`goal${index+1}`).style.color = "green";
-      lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
+      goalCheck.checked = true;
+      lastReachedGoal = goalCheck.nextElementSibling.innerHTML; // Get the goal description
+    } else {
+      goalCheck.checked = false;
     }
   });
-  if (lastGoal === "-") {
+
+  if (lastReachedGoal === "") {
     document.getElementById("goalBanner").innerHTML = "Noch kein Ziel erreicht 😮";
   } else {
-    document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
+    document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastReachedGoal.replace(/<[^>]*>/g, '')}!`;
   }
   document.getElementById("goalBanner").style.display = "block";
 }
+
     loadData();
 </script>
 
