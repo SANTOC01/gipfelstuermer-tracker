@@ -8,115 +8,34 @@
   <style>
     body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
     input, button { margin: 10px; padding: 10px; font-size: 16px; }
-    .container { display: flex; justify-content: center; align-items: flex-start; gap: 50px; }
-    .table-container { width: 50%; }
-    .ranking-container { width: 30%; background: white; padding: 15px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+    .container { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 20px; }
+    @media (min-width: 768px) {
+      .container { flex-direction: row; }
+    }
+    .table-container, .ranking-container {
+      width: 100%; background: white; padding: 15px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); max-height: 600px; overflow-y: auto;
+    }
+    @media (min-width: 768px) {
+      .table-container { flex: 4; height: auto; }
+      .ranking-container { flex: 2; height: auto; }
+    }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid black; padding: 8px; background: white; text-align: left; }
-    canvas { margin-top: 20px; }
+    th:last-child, td:last-child { width: 50px; }
+    th, td { word-wrap: break-word; }
     .progress-bar { width: 100%; background: #ddd; border-radius: 20px; }
     .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; transition: width 0.5s; }
     .goal { font-size: 20px; font-weight: bold; margin-top: 10px; }
     .banner { background: #ffcc00; padding: 10px; font-size: 18px; font-weight: bold; margin: 10px auto; display: none; width: 80%; border-radius: 10px; }
+    .goal-list { list-style-type: none; padding: 0; }
+    .goal-list li { display: flex; align-items: center; margin-bottom: 10px; }
+    .goal-list li input { margin-right: 10px; }
   </style>
-  <style>
-  .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px;
-  }
-  @media (min-width: 768px) {
-    .container {
-      flex-direction: row;
-    }
-  }
-  .table-container, .ranking-container {
-    width: 100%;
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-    max-height: 600px; /* Set a max height to show up to 25 entries */
-    overflow-y: auto; /* Enable vertical scrolling */
-  }
-  @media (min-width: 768px) {
-    .table-container {
-      flex: 4;
-      height: auto;
-    }
-    .ranking-container {
-      flex: 2;
-      height: auto;
-    }
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  th, td {
-    border: 1px solid black;
-    padding: 8px;
-    background: white;
-    text-align: left;
-  }
-  th:last-child, td:last-child {
-    width: 50px; /* Smaller width for the "Löschen" column */
-  }
-  th, td {
-    word-wrap: break-word; /* Prevent overflow by wrapping text */
-  }
-  .progress-bar {
-    width: 100%;
-    background: #ddd;
-    border-radius: 20px;
-  }
-  .progress {
-    height: 30px;
-    width: 0%;
-    background: #4caf50;
-    text-align: center;
-    color: white;
-    border-radius: 20px;
-    transition: width 0.5s;
-  }
-  .goal {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  .banner {
-    background: #ffcc00;
-    padding: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px auto;
-    display: none;
-    width: 80%;
-    border-radius: 10px;
-  }
-  .goal-list { 
-    list-style-type: none; 
-    padding: 0; 
-  }
-  .goal-list li { 
-    display: flex; 
-    align-items: center; 
-    margin-bottom: 10px; 
-  }
-  .goal-list li input { 
-    margin-right: 10px; 
-  }
-</style>
-
-  
 </head>
 <body>
   <h1>🏃 Gipfelstürmer Event 2025 🏔️</h1>
   <p>Gemeinsam sammeln wir 75.000 Höhenmeter bis zum 27.07.2025!</p>
-
+  
   <div id="goalBanner" class="banner"></div>
   
   <input type="text" id="name" placeholder="Dein Name" />
@@ -138,22 +57,16 @@
     </div>
   </div>
   
-  <h2>📈 Fortschritt – Gesamt: <span id='totalHM'>0</span> HM</h2>
-  <div class="progress-bar">
-    <div class="progress" id="progressBar">0%</div>
-  </div>
-  <canvas id="myChart"></canvas>
-  
   <h2>🏆 Belohnungen</h2>
-<ul id="goalList" class="goal-list">
-  <li><input type="checkbox" id="goal1Check" disabled /><label for="goal1Check">🎭 <b>10.000 HM</b> → Trainer im Kostüm</label></li>
-  <li><input type="checkbox" id="goal2Check" disabled /><label for="goal2Check">🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</label></li>
-  <li><input type="checkbox" id="goal3Check" disabled /><label for="goal3Check">🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</label></li>
-  <li><input type="checkbox" id="goal4Check" disabled /><label for="goal4Check">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</label></li>
-</ul>
+  <ul id="goalList" class="goal-list">
+    <li><input type="checkbox" id="goal1Check" disabled /><label for="goal1Check">🎭 <b>10.000 HM</b> → Trainer im Kostüm</label></li>
+    <li><input type="checkbox" id="goal2Check" disabled /><label for="goal2Check">🍕 <b>25.000 HM</b> → Pizza nach dem Lauf</label></li>
+    <li><input type="checkbox" id="goal3Check" disabled /><label for="goal3Check">🥤 <b>50.000 HM</b> → Geheimsnack & Getränke</label></li>
+    <li><input type="checkbox" id="goal4Check" disabled /><label for="goal4Check">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</label></li>
+  </ul>
 
   <script>
-    const sheetURL = "https://script.google.com/macros/s/AKfycbxbt57SZfghrZTx9FXgl2IkqJfkQzvK1slJDJFE_osfPfJHRXXypsOp-zXRh2d9rzPQ/exec";
+    const sheetURL = "https://script.google.com/macros/s/AKfycbx4Obm_5-WYof65kKyVs6trpoq34pLfq6XbWEbL255ZlAhya2f9zlk6WtUH4W6TEul_/exec";
     let chart; // Global chart instance
     
     async function submitData() {
@@ -243,7 +156,6 @@
         chart.destroy();
       }
       
-      // Fixed mountain shape data – feel free to adjust these points to tweak the mountain's form.
       const mountainData = [
         { x: 0, y: 0 },
         { x: 10000, y: 8000 },
@@ -252,138 +164,137 @@
         { x: 75000, y: 75000 }
       ];
       
-      // Build the progress (green) dataset by following the mountain line.
       const progressData = [];
-      progressData.push({ x: mountainData[0].x, y: mountainData[0].y }); // Always start at the base
+      progressData.push({ x: mountainData[0].x, y: mountainData[0].y });
       
-      // Walk through each segment of the mountain.
-for (let i = 0; i < mountainData.length - 1; i++) {
-  const startPoint = mountainData[i];
-  const endPoint = mountainData[i + 1];
-  // If the progress (total) has exceeded the end of this segment, add the full end point.
-  if (total >= endPoint.y) {
-    progressData.push({ x: endPoint.x, y: endPoint.y });
-  }
-  // If total falls between the start and end, interpolate the x value.
-  else if (total > startPoint.y) {
-    const ratio = (total - startPoint.y) / (endPoint.y - startPoint.y);
-    const interpolatedX = startPoint.x + ratio * (endPoint.x - startPoint.x);
-    progressData.push({ x: interpolatedX, y: total });
-    break;
-  } else {
-    // If total isn’t even above the start of this segment, break out.
-    break;
-  }
-}
-      
-const lastPoint = progressData[progressData.length - 1];
-const currentProgressData = [lastPoint];
-
-chart = new Chart(ctx, {
-  type: "line",
-  data: {
-    datasets: [
-      {
-        label: "Fortschritt",
-        data: progressData,
-        borderColor: "green",
-        backgroundColor: "rgba(0,128,0,0.4)",
-        fill: true,
-        tension: 0.4,
-        borderWidth: 2,
-        pointRadius: function (context) {
-          return (context.dataIndex === context.dataset.data.length - 1) ? 10 : 0;
-        },
-        pointBackgroundColor: "green",
-        pointStyle: "circle",
-        z: 2
-      },
-      {
-        label: "Ziele",
-        data: mountainData,
-        borderColor: "saddlebrown",
-        backgroundColor: "rgba(139, 69, 19, 0.2)",
-        fill: true,
-        tension: 0.4,
-        borderWidth: 2,
-        pointRadius: function(context) {
-          const xValue = context.parsed.x;
-          if (xValue === 10000 || xValue === 25000 || xValue === 50000 || xValue === 75000) {
-            return 4;
-          }
-          return 0;
-        },
-        pointBackgroundColor: "saddlebrown",
-        z: 1
-      }
-    ]
-  },
-  options: {
-    plugins: {
-      legend: { display: false }
-    },
-    parsing: false,
-    scales: {
-      x: {
-        type: "linear",
-        min: 0,
-        max: 75000,
-        ticks: {
-          callback: function(value) {
-            if (value === 0) return "Start";
-            if (value === 10000) return "10k";
-            if (value === 25000) return "25k";
-            if (value === 50000) return "50k";
-            if (value === 75000) return "75k";
-            return value;
-          }
+      for (let i = 0; i < mountainData.length - 1; i++) {
+        const startPoint = mountainData[i];
+        const endPoint = mountainData[i + 1];
+        if (total >= endPoint.y) {
+          progressData.push({ x: endPoint.x, y: endPoint.y });
         }
-      },
-      y: {
-        min: 0,
-        max: 75000,
-        ticks: {
-          callback: function(value) { return value; }
+        else if (total > startPoint.y) {
+          const ratio = (total - startPoint.y) / (endPoint.y - startPoint.y);
+          const interpolatedX = startPoint.x + ratio * (endPoint.x - startPoint.x);
+          progressData.push({ x: interpolatedX, y: total });
+          break;
+        } else {
+          break;
         }
       }
-    }
-  }
-});
-}
+      
+      const lastPoint = progressData[progressData.length - 1];
+      const currentProgressData = [lastPoint];
 
-function checkGoals(total) {
-  const goals = [10000, 25000, 50000, 75000];
-  goals.forEach((goal, index) => {
-    const checkbox = document.getElementById(`goal${index + 1}Check`);
-    if (total >= goal) {
-      checkbox.checked = true;
-    } else {
-      checkbox.checked = false;
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Fortschritt",
+              data: progressData,
+              borderColor: "green",
+              backgroundColor: "rgba(0,128,0,0.4)",
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2,
+              pointRadius: function (context) {
+                return (context.dataIndex === context.dataset.data.length - 1) ? 10 : 0;
+              },
+              pointBackgroundColor: "green",
+              pointStyle: "circle",
+              z: 2
+            },
+            {
+              label: "Ziele",
+              data: mountainData,
+              borderColor: "saddlebrown",
+              backgroundColor: "rgba(139, 69, 19, 0.2)",
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2,
+              pointRadius: function(context) {
+                const xValue = context.parsed.x;
+                if (xValue === 10000 || xValue === 25000 || xValue === 50000 || xValue === 75000) {
+                  return 4;
+                }
+                return 0;
+              },
+              pointBackgroundColor: "saddlebrown",
+              z: 1
+            }
+          ]
+        },
+         options: {
+          plugins: {
+            legend: { display: false }
+          },
+          parsing: false,
+          scales: {
+            x: {
+              type: "linear",
+              min: 0,
+              max: 75000,
+              ticks: {
+                callback: function(value) {
+                  if (value === 0) return "Start";
+                  if (value === 10000) return "10k";
+                  if (value === 25000) return "25k";
+                  if (value === 50000) return "50k";
+                  if (value === 75000) return "75k";
+                  return value;
+                }
+              }
+            },
+            y: {
+              min: 0,
+              max: 75000,
+              ticks: {
+                callback: function(value) { return value; }
+              }
+            }
+          }
+        }
+      });
     }
-  });
-  updateGoalBanner(total);
-}
 
-function updateGoalBanner(total) {
-  const goals = [10000, 25000, 50000, 75000];
-  let lastGoal = "-";
-  goals.forEach((goal, index) => {
-    if (total >= goal) {
-      document.getElementById(`goal${index+1}`).style.color = "green";
-      lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
+    function checkGoals(total) {
+      const goals = [10000, 25000, 50000, 75000];
+      goals.forEach((goal, index) => {
+        const checkbox = document.getElementById(`goal${index + 1}Check`);
+        const label = document.querySelector(`label[for="goal${index + 1}Check"]`);
+        if (total >= goal) {
+          checkbox.checked = true;
+          label.style.color = "green";
+          label.style.textDecoration = "line-through";
+        } else {
+          checkbox.checked = false;
+          label.style.color = "black";
+          label.style.textDecoration = "none";
+        }
+      });
+      updateGoalBanner(total);
     }
-  });
-  if (lastGoal === "-") {
-    document.getElementById("goalBanner").innerHTML = "Noch kein Ziel erreicht 😮";
-  } else {
-    document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
-  }
-  document.getElementById("goalBanner").style.display = "block";
-}
-    
-loadData();
-</script>
 
+    function updateGoalBanner(total) {
+      const goals = [10000, 25000, 50000, 75000];
+      let lastGoal = "-";
+      goals.forEach((goal, index) => {
+        if (total >= goal) {
+          document.getElementById(`goal${index+1}`).style.color = "green";
+          lastGoal = document.getElementById(`goal${index+1}`).innerHTML;
+        }
+      });
+      if (lastGoal === "-") {
+        document.getElementById("goalBanner").innerHTML = "Noch kein Ziel erreicht 😮";
+      } else {
+        document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
+      }
+      document.getElementById("goalBanner").style.display = "block";
+    }
+
+    loadData();
+  </script>
 </body>
 </html>
 
