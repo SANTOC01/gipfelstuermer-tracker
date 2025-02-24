@@ -144,8 +144,6 @@
   </div>
   <canvas id="myChart"></canvas>
   
-  <h2 class="goal" id="latestGoal">🏆 Letztes erreichtes Ziel: -</h2>
-  
   <h2>🏆 Belohnungen</h2>
 <ul id="goalList" class="goal-list">
   <li><input type="checkbox" id="goal1Check" disabled /><label for="goal1Check">🎭 <b>10.000 HM</b> → Trainer im Kostüm</label></li>
@@ -154,7 +152,6 @@
   <li><input type="checkbox" id="goal4Check" disabled /><label for="goal4Check">🍰 <b>75.000 HM</b> → Erdbeertorte & Urkunden!</label></li>
 </ul>
 
-  
   <script>
     const sheetURL = "https://script.google.com/macros/s/AKfycbxbt57SZfghrZTx9FXgl2IkqJfkQzvK1slJDJFE_osfPfJHRXXypsOp-zXRh2d9rzPQ/exec";
     let chart; // Global chart instance
@@ -356,6 +353,19 @@ chart = new Chart(ctx, {
 
 function checkGoals(total) {
   const goals = [10000, 25000, 50000, 75000];
+  goals.forEach((goal, index) => {
+    const checkbox = document.getElementById(`goal${index + 1}Check`);
+    if (total >= goal) {
+      checkbox.checked = true;
+    } else {
+      checkbox.checked = false;
+    }
+  });
+  updateGoalBanner(total);
+}
+
+function updateGoalBanner(total) {
+  const goals = [10000, 25000, 50000, 75000];
   let lastGoal = "-";
   goals.forEach((goal, index) => {
     if (total >= goal) {
@@ -368,9 +378,9 @@ function checkGoals(total) {
   } else {
     document.getElementById("goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastGoal.replace(/<[^>]*>/g, '')}!`;
   }
-  document.getElementById("latestGoal").innerHTML = `🏆 Letztes erreichtes Ziel: ${lastGoal}`;
   document.getElementById("goalBanner").style.display = "block";
 }
+
 
 loadData();
 </script>
