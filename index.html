@@ -69,19 +69,21 @@
     word-wrap: break-word; /* Prevent overflow by wrapping text */
   }
   .progress-bar {
-    width: 100%;
-    background: #ddd;
-    border-radius: 20px;
-  }
-  .progress {
-    height: 30px;
-    width: 0%;
-    background: #4caf50;
-    text-align: center;
-    color: white;
-    border-radius: 20px;
-    transition: width 0.5s;
-  }
+  width: 100%;
+  background: #ddd;
+  border-radius: 20px; /* Rounded corners for the bar */
+  overflow: hidden; /* Ensure contents are clipped to fit within the rounded corners */
+}
+
+.progress {
+  height: 30px;
+  width: 0%;
+  background: #4caf50;
+  text-align: center;
+  color: white;
+  transition: width 0.5s;
+  border-radius: 20px 0 0 20px; /* Rounded corners only at the left side */
+}
   .goal {
     font-size: 20px;
     font-weight: bold;
