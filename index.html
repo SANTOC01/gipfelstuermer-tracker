@@ -8,8 +8,11 @@
   <style>
     body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
     input, button { margin: 10px; padding: 10px; font-size: 16px; }
+    .container { display: flex; justify-content: center; align-items: flex-start; gap: 50px; }
+    .table-container { width: 50%; }
+    .ranking-container { width: 30%; background: white; padding: 15px; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid black; padding: 8px; background: white; }
+    th, td { border: 1px solid black; padding: 8px; background: white; text-align: left; }
     canvas { margin-top: 20px; }
     .progress-bar { width: 100%; background: #ddd; border-radius: 20px; }
     .progress { height: 30px; width: 0%; background: #4caf50; text-align: center; color: white; border-radius: 20px; transition: width 0.5s; }
@@ -27,10 +30,20 @@
   <input type="number" id="hohenmeter" placeholder="Höhenmeter" max="1200" oninput="validateHohenmeter()" />
   <button onclick="submitData()">Absenden</button>
   
-  <h2>📋 Letzte Einträge</h2>
-  <table id="dataTable">
-    <tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>
-  </table>
+  <div class="container">
+    <div class="table-container">
+      <h2>📋 Letzte Einträge</h2>
+      <table id="dataTable">
+        <tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>
+      </table>
+    </div>
+    <div class="ranking-container">
+      <h2>🏆 Höhenmeter-Helden</h2>
+      <table id="rankingTable">
+          <tr><th>Platz</th><th>Name</th><th>Höhenmeter</th></tr>
+      </table>
+    </div>
+  </div>
   
   <h2>📈 Fortschritt – Gesamt: <span id='totalHM'>0</span> HM</h2>
   <div class="progress-bar">
@@ -49,7 +62,7 @@
   </ul>
   
   <script>
-    const sheetURL = "https://script.google.com/macros/s/AKfycbx4Obm_5-WYof65kKyVs6trpoq34pLfq6XbWEbL255ZlAhya2f9zlk6WtUH4W6TEul_/exec";
+    const sheetURL = "https://script.google.com/macros/s/AKfycbwMah3m8YYa2NXEw8pnAH11NQhoM8AP_wK5sCVPklGzVITFFXtL0BepynztGrfbL2L1/exec";
     let chart; // Global chart instance
     
     async function submitData() {
@@ -82,33 +95,49 @@
   }
 }
     
-   async function loadData() {
-  const response = await fetch(`${sheetURL}?action=get`);
-  const data = await response.json();
-  const table = document.getElementById("dataTable");
-  
-  // Extract all entries (skip the header row) and reverse them:
-  const entries = data.slice(1).reverse(); // Now, newest entries come first
-  
-  table.innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
-  let total = 0;
+    async function loadData() {
+      const response = await fetch(`${sheetURL}?action=get`);
+      const data = await response.json();
+      
+      const mainData = data.main.reverse(); // Main table data
+      const rankingData = data.ranking.sort((a, b) => b[1] - a[1]); // Sort ranking descending
+      
+      document.getElementById("dataTable").innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
+      let total = 0;
 
-  entries.forEach((row, index) => {
-    total += parseInt(row[1]);
-    table.innerHTML += `<tr>
-      <td>${row[0]}</td>
-      <td>${row[1]}</td>
-      <td>${new Date(row[2]).toLocaleDateString()}</td>
-      <td>${index === 0 ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>` : ""}</td>
-    </tr>`;
-  });
-  
-  updateProgress(total);
-  drawChart(total);
-  checkGoals(total);
-}
+      mainData.forEach((row, index) => {
+        total += parseInt(row[1]);
+        document.getElementById("dataTable").innerHTML += `<tr>
+          <td>${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${new Date(row[2]).toLocaleDateString()}</td>
+          <td>${index === 0 ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>` : ""}</td>
+        </tr>`;
+      });
 
-
+      updateProgress(total);
+      drawChart(total);
+      updateRanking(rankingData);
+      checkGoals(total);
+    }
+    
+    async function updateRanking(rankingData) {
+      const rankingTable = document.getElementById("rankingTable");
+      rankingTable.innerHTML = "<tr><th>Platz</th><th>Name</th><th>Höhenmeter</th></tr>";
+    
+      rankingData.forEach((row, index) => {
+        let rankEmoji = "😎"; // Default emoji
+        if (index === 0) rankEmoji = "🏆"; // First place
+        else if (index === 1) rankEmoji = "🔥"; // Second place
+        else if (index === 2) rankEmoji = "💪"; // Third place
+    
+        rankingTable.innerHTML += `<tr>
+          <td>${index + 1} ${rankEmoji}</td>
+          <td>${row[0]}</td>
+          <td>${row[1]}</td>
+        </tr>`;
+      });
+    }
     
     function updateProgress(total) {
       const percentage = (total / 75000) * 100;
@@ -137,71 +166,65 @@
       progressData.push({ x: mountainData[0].x, y: mountainData[0].y }); // Always start at the base
       
       // Walk through each segment of the mountain.
-      for (let i = 0; i < mountainData.length - 1; i++) {
-        const startPoint = mountainData[i];
-        const endPoint = mountainData[i + 1];
-        // If the progress (total) has exceeded the end of this segment, add the full end point.
-        if (total >= endPoint.y) {
-          progressData.push({ x: endPoint.x, y: endPoint.y });
-        }
-        // If total falls between the start and end, interpolate the x value.
-        else if (total > startPoint.y) {
-          const ratio = (total - startPoint.y) / (endPoint.y - startPoint.y);
-          const interpolatedX = startPoint.x + ratio * (endPoint.x - startPoint.x);
-          progressData.push({ x: interpolatedX, y: total });
-          break;
-        } else {
-          // If total isn’t even above the start of this segment, break out.
-          break;
-        }
-      }
+for (let i = 0; i < mountainData.length - 1; i++) {
+  const startPoint = mountainData[i];
+  const endPoint = mountainData[i + 1];
+  // If the progress (total) has exceeded the end of this segment, add the full end point.
+  if (total >= endPoint.y) {
+    progressData.push({ x: endPoint.x, y: endPoint.y });
+  }
+  // If total falls between the start and end, interpolate the x value.
+  else if (total > startPoint.y) {
+    const ratio = (total - startPoint.y) / (endPoint.y - startPoint.y);
+    const interpolatedX = startPoint.x + ratio * (endPoint.x - startPoint.x);
+    progressData.push({ x: interpolatedX, y: total });
+    break;
+  } else {
+    // If total isn’t even above the start of this segment, break out.
+    break;
+  }
+}
       
-      // Update progress dataset to show only the current point with the runner emoji.
-      const lastPoint = progressData[progressData.length - 1];
-      const currentProgressData = [lastPoint];
-      
-     chart = new Chart(ctx, {
+const lastPoint = progressData[progressData.length - 1];
+const currentProgressData = [lastPoint];
+
+chart = new Chart(ctx, {
   type: "line",
   data: {
     datasets: [
       {
-        // Dynamic progress dataset (green)
         label: "Fortschritt",
-        data: progressData, // progressData should contain all computed points along the mountain curve
+        data: progressData,
         borderColor: "green",
         backgroundColor: "rgba(0,128,0,0.4)",
-        fill: true, // fills the area under the line
+        fill: true,
         tension: 0.4,
         borderWidth: 2,
-        // Only show a marker for the last (current) point
         pointRadius: function (context) {
           return (context.dataIndex === context.dataset.data.length - 1) ? 10 : 0;
         },
         pointBackgroundColor: "green",
-        // Use a full filled circle for the current point marker
         pointStyle: "circle",
         z: 2
       },
       {
-  // Fixed mountain outline dataset (brown)
-  label: "Ziele",
-  data: mountainData, // your mountainData array remains unchanged
-  borderColor: "saddlebrown",
-  backgroundColor: "rgba(139, 69, 19, 0.2)",
-  fill: true,
-  tension: 0.4,
-  borderWidth: 2,
-  pointRadius: function(context) {
-    const xValue = context.parsed.x;
-    // Only display a point if x is one of the milestone values.
-    if (xValue === 10000 || xValue === 25000 || xValue === 50000 || xValue === 75000) {
-      return 4;
-    }
-    return 0;
-  },
-  pointBackgroundColor: "saddlebrown",
-  z: 1
-}
+        label: "Ziele",
+        data: mountainData,
+        borderColor: "saddlebrown",
+        backgroundColor: "rgba(139, 69, 19, 0.2)",
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: function(context) {
+          const xValue = context.parsed.x;
+          if (xValue === 10000 || xValue === 25000 || xValue === 50000 || xValue === 75000) {
+            return 4;
+          }
+          return 0;
+        },
+        pointBackgroundColor: "saddlebrown",
+        z: 1
+      }
     ]
   },
   options: {
@@ -257,5 +280,7 @@ function checkGoals(total) {
 
 loadData();
 </script>
+
 </body>
 </html>
+
