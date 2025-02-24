@@ -20,31 +20,37 @@
     .banner { background: #ffcc00; padding: 10px; font-size: 18px; font-weight: bold; margin: 10px auto; display: none; width: 80%; border-radius: 10px; }
   </style>
   <style>
-  .container { 
+  .container {
     display: flex; 
+    flex-direction: column; /* Stack elements vertically on small screens */
     justify-content: center; 
     align-items: flex-start; 
-    gap: 20px; /* Reduced gap for better alignment */
+    gap: 20px; 
   }
-  .table-container {
-    flex: 4; 
+  @media (min-width: 768px) { 
+    .container { 
+      flex-direction: row; /* Side-by-side layout on larger screens */
+    }
+  }
+  .table-container, .ranking-container {
+    width: 100%; 
     background: white; 
     padding: 15px; 
     border-radius: 10px; 
     box-shadow: 2px 2px 10px rgba(0,0,0,0.1); 
-    height: 500px; /* Set a fixed height for consistency */
-    overflow-y: auto; /* Scroll if content overflows */
   }
-  .ranking-container {
-    flex: 2; 
-    background: white; 
-    padding: 15px; 
-    border-radius: 10px; 
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1); 
-    height: 500px; /* Set a fixed height for consistency */
-    overflow-y: auto; /* Scroll if content overflows */
+  @media (min-width: 768px) {
+    .table-container { 
+      flex: 3; 
+      height: auto; /* Remove fixed height */
+    }
+    .ranking-container { 
+      flex: 1; 
+      height: auto; /* Remove fixed height */
+    }
   }
 </style>
+  
 </head>
 <body>
   <h1>🏃 Gipfelstürmer Event 2025 🏔️</h1>
