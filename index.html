@@ -126,6 +126,12 @@
   margin-right: 10px;
 }
 
+.goal-list .completed {
+  color: green;
+  text-decoration: line-through;
+}
+
+
 </style>
 
 
@@ -373,15 +379,17 @@ function checkGoals(total) {
   const goals = [10000, 25000, 50000, 75000];
   goals.forEach((goal, index) => {
     const checkbox = document.getElementById(`goal${index + 1}Check`);
+    const listItem = checkbox.parentElement;
     if (total >= goal) {
       checkbox.checked = true;
+      listItem.classList.add("completed");
     } else {
       checkbox.checked = false;
+      listItem.classList.remove("completed");
     }
   });
   updateGoalBanner(total);
 }
-
 function updateGoalBanner(total) {
   const goals = [10000, 25000, 50000, 75000];
   let lastGoal = "-";
