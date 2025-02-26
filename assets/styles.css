@@ -32,7 +32,7 @@ input, button {
   flex-direction: column; /* Stack content vertically */
   align-items: center; /* Center content horizontally */
   width: 100%; /* Full width */
-  max-width: 650px; /* Limit max width */
+  max-width: 700px; /* Limit max width */
   padding: 20px;
   box-sizing: border-box; /* Include padding in width/height */
 }
@@ -56,46 +56,63 @@ input, button {
   flex-direction: column; /* Stack content vertically on smaller screens */
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
+}
+
+
+.tables-wrapper {
+  display: flex;
+  justify-content: space-between; /* ✅ Even spacing */
+  align-items: stretch;
+  width: 100%;
+  max-width: 700px; /* ✅ Matches the transparent container */
+  gap: 10px; /* ✅ Reduce space between tables */
 }
 
 .table-container, .ranking-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-x: auto; /* Enable scrolling if needed */
-  width: 100%; /* Ensure they take the available space */
-  background: white; /* ✅ Restore white background */
-  padding: 15px; /* ✅ Add padding for spacing */
-  border-radius: 10px; /* ✅ Rounded corners */
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* ✅ Subtle shadow */
+  flex: 1; /* ✅ Both take equal space */
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* ✅ Stops tables from overflowing */
+  max-width: 340px; /* ✅ Scales down for fitting inside */
 }
 
-.table-container table, .ranking-container table {
-  width: 100%; /* Make table fill its parent container */
-  table-layout: fixed; /* Forces columns to have equal widths */
-  font-size: 14px; /* Reduce font size for better fit */
+.table-container {
+  flex: 0 0 58%; /* ✅ Slightly bigger */
+}
+
+.ranking-container {
+  flex: 0 0 38%; /* ✅ Slightly smaller */
+}
+
+.table-container table,
+.ranking-container table {
+  width: 100%; /* ✅ Forces table to fit inside */
+  table-layout: fixed; /* ✅ Prevents expanding */
+  font-size: 12px; /* ✅ Reduce text size */
 }
 
 th, td {
   border: 1px solid black;
-  padding: 6px; /* Reduce padding to make cells more compact */
+  padding: 4px; /* ✅ Reduce padding */
   text-align: center;
-  word-wrap: break-word; /* Ensure text wraps within the table cell */
-  overflow: hidden; /* Hide overflowing text */
-  white-space: nowrap; /* Prevent wrapping */
+  word-wrap: break-word;
+  overflow: hidden;
+  white-space: normal; /* ✅ Allows wrapping */
 }
 
-th {
-  font-size: 15px; /* Slightly larger than td for better readability */
-}
-
-.table-container {
-  width: 55%; /* Adjust width to be smaller */
-}
-
-.ranking-container {
-  width: 35%; /* Adjust width to be smaller */
+/* ✅ Make tables stack on small screens */
+@media (max-width: 768px) {
+  .tables-wrapper {
+    flex-direction: column;
+    max-width: 90%; /* ✅ Reduce width on mobile */
+  }
+  .table-container, .ranking-container {
+    flex: 0 0 100%;
+    max-width: none; /* ✅ Full width on small screens */
+  }
 }
 
 .progress-bar {

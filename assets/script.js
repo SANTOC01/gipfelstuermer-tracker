@@ -41,7 +41,7 @@ async function loadData() {
   const rankingData = data.ranking.sort((a, b) => b[1] - a[1]); // Sort ranking descending
 
   document.getElementById(
-      "dataTable").innerHTML = "<tr><th>Name</th><th>Höhenmeter</th><th>Datum</th><th>Löschen</th></tr>";
+      "dataTable").innerHTML = "<tr><th>Name</th><th>HM</th><th>Datum</th><th>Löschen</th></tr>";
   let total = 0;
 
   mainData.forEach((row, index) => {
@@ -64,7 +64,7 @@ async function loadData() {
 
 async function updateRanking(rankingData) {
   const rankingTable = document.getElementById("rankingTable");
-  rankingTable.innerHTML = "<tr><th>Platz</th><th>Name</th><th>Höhenmeter</th></tr>";
+  rankingTable.innerHTML = "<tr><th>Platz</th><th>Name</th><th>HM</th></tr>";
 
   rankingData.forEach((row, index) => {
     let rankEmoji = "😎"; // Default emoji
