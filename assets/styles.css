@@ -6,6 +6,11 @@ body {
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Prevent tiling */
   background-attachment: fixed; /* Keep it fixed while scrolling */
+
+  @media (max-width: 768px) { /* ✅ Only for mobile */
+    background-attachment: scroll; /* ✅ Fixes scrolling issue */
+  }
+
   margin: 0; /* Remove default margin */
   padding: 0; /* Remove default padding */
   min-height: 100vh; /* ✅ Ensures the page takes full height but expands when needed */
@@ -55,27 +60,42 @@ input, button {
 }
 
 .table-container, .ranking-container {
-  width: 100%;
-  max-width: 650px;
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  overflow-x: auto; /* Add horizontal slider */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: auto; /* Enable scrolling if needed */
+  width: 100%; /* Ensure they take the available space */
+  background: white; /* ✅ Restore white background */
+  padding: 15px; /* ✅ Add padding for spacing */
+  border-radius: 10px; /* ✅ Rounded corners */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* ✅ Subtle shadow */
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+.table-container table, .ranking-container table {
+  width: 100%; /* Make table fill its parent container */
+  table-layout: fixed; /* Forces columns to have equal widths */
+  font-size: 14px; /* Reduce font size for better fit */
 }
 
 th, td {
   border: 1px solid black;
-  padding: 8px;
-  background: white;
-  text-align: left;
-  white-space: nowrap; /* Prevent wrapping to keep the table cells in one line */
+  padding: 6px; /* Reduce padding to make cells more compact */
+  text-align: center;
+  word-wrap: break-word; /* Ensure text wraps within the table cell */
+  overflow: hidden; /* Hide overflowing text */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+th {
+  font-size: 15px; /* Slightly larger than td for better readability */
+}
+
+.table-container {
+  width: 55%; /* Adjust width to be smaller */
+}
+
+.ranking-container {
+  width: 35%; /* Adjust width to be smaller */
 }
 
 .progress-bar {
