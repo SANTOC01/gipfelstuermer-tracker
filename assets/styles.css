@@ -5,7 +5,7 @@ body {
   background-size: cover;  /* Scale image to cover the entire screen */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Prevent tiling */
-  background-attachment: fixed; /* Keep it fixed while scrolling */
+  background-attachment: scroll; /* Keep it fixed while scrolling */
 
   @media (max-width: 768px) { /* ✅ Only for mobile */
     background-attachment: scroll; /* ✅ Fixes scrolling issue */
@@ -80,11 +80,11 @@ input, button {
 }
 
 .table-container {
-  flex: 0 0 58%; /* ✅ Slightly bigger */
+  flex: 0 0 60%; /* ✅ Slightly bigger */
 }
 
 .ranking-container {
-  flex: 0 0 38%; /* ✅ Slightly smaller */
+  flex: 0 0 36%; /* ✅ Slightly smaller */
 }
 
 .table-container table,
