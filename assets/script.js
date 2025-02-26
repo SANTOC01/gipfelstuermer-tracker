@@ -219,6 +219,7 @@ function drawChart(total) {
         }
       }
     }
+
   });
 }
 

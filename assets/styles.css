@@ -1,8 +1,19 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background: #f4f4f4;
-  padding: 20px;
+  background-image: url('https://raw.githubusercontent.com/SANTOC01/gipfelstuermer-tracker/refs/heads/main/assets/mountain.jpg'); /* Your image path */
+  background-size: cover;  /* Scale image to cover the entire screen */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent tiling */
+  background-attachment: fixed; /* Keep it fixed while scrolling */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  min-height: 100vh; /* ✅ Ensures the page takes full height but expands when needed */
+  display: flex;
+  justify-content: flex-start; /* ✅ Align content at the top */
+  align-items: center; /* ✅ Keeps horizontal centering */
+  flex-direction: column;
+  overflow: auto;
 }
 
 input, button {
@@ -11,19 +22,46 @@ input, button {
   font-size: 16px;
 }
 
+.content-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  align-items: center; /* Center content horizontally */
+  width: 100%; /* Full width */
+  max-width: 650px; /* Limit max width */
+  padding: 20px;
+  box-sizing: border-box; /* Include padding in width/height */
+}
+
+.content {
+  position: relative;
+  z-index: 1; /* Ensures the content is above the background */
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  border-radius: 10px;
+  margin: 20px 0; /* Vertical margin */
+  width: 100%; /* Full width */
+  box-sizing: border-box; /* Include padding in width/height */
+}
+
 .container {
   display: flex;
+  flex-direction: column; /* Stack content vertically on smaller screens */
   justify-content: center;
-  align-items: flex-start;
-  gap: 50px;
+  align-items: center;
+  gap: 20px;
 }
 
 .table-container, .ranking-container {
-  width: 50%;
+  width: 100%;
+  max-width: 650px;
   background: white;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* Add horizontal slider */
 }
 
 table {
@@ -37,26 +75,24 @@ th, td {
   padding: 8px;
   background: white;
   text-align: left;
-}
-
-canvas {
-  margin-top: 20px;
+  white-space: nowrap; /* Prevent wrapping to keep the table cells in one line */
 }
 
 .progress-bar {
   width: 100%;
   background: #ddd;
   border-radius: 20px;
+  overflow: hidden; /* Add this to clip the contents */
 }
 
 .progress {
-  height: 30px;
   width: 0%;
-  background: #4caf50;
+  height: 20px;
+  background-color: #4caf50;
   text-align: center;
+  line-height: 20px;
   color: white;
-  border-radius: 20px;
-  transition: width 0.5s;
+  font-weight: bold;
 }
 
 .goal {
@@ -78,25 +114,54 @@ canvas {
 
 @media (min-width: 768px) {
   .container {
-    flex-direction: row;
+    flex-direction: row; /* Align content horizontally on larger screens */
   }
 }
 
 .goal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: lightbrown;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  width: 80%; /* Ensure all containers are the same width */
+  max-width: 600px; /* Limit max width */
+  background: white; /* Optional: makes it stand out */
+  padding: 20px;
+  margin-bottom: 20px; /* Space between sections */
+  border-radius: 10px; /* Optional: Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+  text-align: left; /* Align text to the left */
 }
 
 .goal-list {
   list-style-type: none;
+  padding: 0;
+  text-align: left; /* Align list to the left */
+}
+
+.goal-wrapper {
+  display: flex; /* Flexbox layout */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center them horizontally */
+  width: 100%; /* Full width */
+}
+
+.chart-container, .rewards-container {
+  background-color: white;
   padding: 20px;
-  background: white;
   border-radius: 10px;
-  width: 80%;
-  margin: 0;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  font-size: 16px;
+  padding: 5px 0;
 }
