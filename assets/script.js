@@ -33,6 +33,15 @@ function validateHohenmeter() {
   }
 }
 
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  });
+}
+
 async function loadData() {
   const response = await fetch(`${sheetURL}?action=get`);
   const data = await response.json();
@@ -47,13 +56,13 @@ async function loadData() {
   mainData.forEach((row, index) => {
     total += parseInt(row[1]);
     document.getElementById("dataTable").innerHTML += `<tr>
-          <td>${row[0]}</td>
-          <td>${row[1]}</td>
-          <td>${new Date(row[2]).toLocaleDateString()}</td>
-          <td>${index === 0
+      <td>${row[0]}</td>
+      <td>${row[1]}</td>
+      <td>${formatDate(row[2])}</td>
+      <td>${index === 0
         ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>`
         : ""}</td>
-        </tr>`;
+    </tr>`;
   });
 
   updateProgress(total);
