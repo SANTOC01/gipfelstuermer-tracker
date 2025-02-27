@@ -2,21 +2,17 @@ body {
   font-family: Arial, sans-serif;
   text-align: center;
   background-image: url('https://raw.githubusercontent.com/SANTOC01/gipfelstuermer-tracker/refs/heads/main/assets/mountain.jpg'); /* Your image path */
-  background-size: cover;  /* Scale image to cover the entire screen */
+  background-size: cover; /* Scale image to cover the entire screen */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Prevent tiling */
   background-attachment: scroll; /* Keep it fixed while scrolling */
 
-  @media (max-width: 768px) { /* ✅ Only for mobile */
+  @media (max-width: 768px) {
+    /* ✅ Only for mobile */
     background-attachment: scroll; /* ✅ Fixes scrolling issue */
   }
 
   h1 {
-    :first-child{
-      height: 35%;
-      width: 35% ;
-      float: left;
-    }
     font-size: 2rem;
     font-weight: bold;
     color: white;
@@ -41,6 +37,13 @@ input, button {
   padding: 10px;
   font-size: 16px;
 }
+
+img {
+  height: 35%;
+  width: 35%;
+  float: left;
+}
+
 
 .content-wrapper {
   display: flex;
@@ -126,6 +129,7 @@ th, td {
     flex-direction: column;
     max-width: 90%; /* ✅ Reduce width on mobile */
   }
+
   .table-container, .ranking-container {
     flex: 0 0 100%;
     max-width: none; /* ✅ Full width on small screens */
@@ -181,7 +185,8 @@ th, td {
   border-radius: 10px; /* Optional: Rounded corners */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
   text-align: center;
-  :last-child{
+
+  :last-child {
     text-align: left; /* Align text to the left */
   }
 }
