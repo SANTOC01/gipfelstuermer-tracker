@@ -10,6 +10,14 @@ body {
   @media (max-width: 768px) { /* ✅ Only for mobile */
     background-attachment: scroll; /* ✅ Fixes scrolling issue */
   }
+  h1 {
+    font-size: 2rem; /* Adjust size as needed */
+    font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 1px black;
+    text-align: center;
+    font-family: Arial, sans-serif; /* Change to preferred font */
+  }
 
   margin: 0; /* Remove default margin */
   padding: 0; /* Remove default padding */

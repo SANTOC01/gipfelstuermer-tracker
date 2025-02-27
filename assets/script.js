@@ -188,7 +188,8 @@ function drawChart(total) {
     },
     options: {
       plugins: {
-        legend: {display: false}
+        legend: {
+          display: false}
       },
       parsing: false,
       scales: {
@@ -223,8 +224,10 @@ function drawChart(total) {
           ticks: {
             callback: function (value) {
               return value;
-            }
+            },
+            display: false
           }
+
         }
       }
     }
