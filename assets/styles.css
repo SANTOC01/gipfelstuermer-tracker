@@ -204,6 +204,14 @@ th, td {
   width: 100%; /* Full width */
 }
 
+.completed {
+  color: green;
+  font-weight: bold;
+}
+.completed label {
+  text-decoration: line-through;
+}
+
 .chart-container, .rewards-container {
   background-color: white;
   padding: 20px;
@@ -227,27 +235,32 @@ ul li {
   font-size: 16px;
   padding: 5px 0;
 }
-/* Toast Notification */
+
+
 .toast {
   visibility: hidden;
-  min-width: 250px;
-  background-color: #333;
-  color: #fff;
+  min-width: 300px; /* Increased minimum width */
+  background-color: #333; /* Dark background for contrast */
+  color: #fff; /* White text for better readability */
+  border-left: 5px solid #ff9800; /* Accent color */
   text-align: center;
-  border-radius: 5px;
-  padding: 15px;
+  border-radius: 8px; /* Softer rounded corners */
+  padding: 20px;
   position: fixed;
   z-index: 1000;
   left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%);
-  font-size: 16px;
+  top: 30px; /* Position it from the top instead of the bottom */
+  transform: translateX(-50%); /* Keep it centered horizontally */
+  font-size: 18px; /* Increased font size */
   opacity: 0;
-  transition: opacity 0.5s, bottom 0.5s;
+  transition: opacity 0.5s, top 0.5s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Adds subtle depth */
+  font-family: 'Roboto', sans-serif; /* Modern font */
 }
 
+/* Add an animation when visible */
 .toast.show {
   visibility: visible;
   opacity: 1;
-  bottom: 50px;
+  top: 50px; /* Moves down a bit when shown */
 }
