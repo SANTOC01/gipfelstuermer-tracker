@@ -2,7 +2,7 @@ const sheetURL = "https://script.google.com/macros/s/AKfycbxbt57SZfghrZTx9FXgl2I
 let chart; // Global chart instance
 
 async function submitData() {
-  const name = document.getElementById("name").value;
+  let name = document.getElementById("name").value.trim().replace(/\s+/g, '');
   const hohenmeter = document.getElementById("hohenmeter").value;
 
   if (!name || !hohenmeter) {
