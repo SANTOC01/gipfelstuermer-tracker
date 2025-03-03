@@ -1,38 +1,51 @@
 const sheetURL = "https://script.google.com/macros/s/AKfycbxbt57SZfghrZTx9FXgl2IkqJfkQzvK1slJDJFE_osfPfJHRXXypsOp-zXRh2d9rzPQ/exec";
 let chart; // Global chart instance
 
+// Toast Notification Function
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000); // Hide after 3 seconds
+}
+
+// Submit Data Function
 async function submitData() {
   let name = document.getElementById("name").value.trim().replace(' ', '');
   const hohenmeter = document.getElementById("hohenmeter").value;
 
   if (!name || !hohenmeter) {
-    alert("Bitte beide Felder ausfüllen!");
+    showToast("Bitte beide Felder ausfüllen! ⚠️");
     return;
   }
 
-  await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(
-      name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-  alert("Eingetragen! Danke fürs Mitmachen! 🎉");
+  await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+
+  showToast("✅ Eingetragen! Danke fürs Mitmachen! 🎉");
   loadData();
 }
 
+// Delete Data Function
 async function deleteData(name, hohenmeter) {
-  await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(
-      name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-  alert("Eintrag gelöscht!");
+  await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+
+  showToast("🗑️ Eintrag gelöscht!");
   loadData();
 }
 
+// Validate Höhenmeter Input
 function validateHohenmeter() {
   const hmInput = document.getElementById("hohenmeter");
   const value = Number(hmInput.value);
   if (value > 1200) {
-    alert("Sei ehrlich 🤥😏");
-    // Optionally, to enforce the limit, you can reset the input:
-    // hmInput.value = 1200;
+    showToast("Sei ehrlich 🤥😏");
   }
 }
 
+// Format Date
 function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('de-DE', {
@@ -42,15 +55,15 @@ function formatDate(dateString) {
   });
 }
 
+// Load Data from Google Sheet
 async function loadData() {
   const response = await fetch(`${sheetURL}?action=get`);
   const data = await response.json();
 
-  const mainData = data.main.reverse(); // Main table data
-  const rankingData = data.ranking.sort((a, b) => b[1] - a[1]); // Sort ranking descending
+  const mainData = data.main.reverse();
+  const rankingData = data.ranking.sort((a, b) => b[1] - a[1]);
 
-  document.getElementById(
-      "dataTable").innerHTML = "<tr><th>Name</th><th>HM</th><th>Datum</th><th>Löschen</th></tr>";
+  document.getElementById("dataTable").innerHTML = "<tr><th>Name</th><th>HM</th><th>Datum</th><th>Löschen</th></tr>";
   let total = 0;
 
   mainData.forEach((row, index) => {
@@ -71,21 +84,13 @@ async function loadData() {
   checkGoals(total);
 }
 
+// Update Ranking Table
 async function updateRanking(rankingData) {
   const rankingTable = document.getElementById("rankingTable");
   rankingTable.innerHTML = "<tr><th>Platz</th><th>Name</th><th>HM</th></tr>";
 
   rankingData.forEach((row, index) => {
-    let rankEmoji = "😎"; // Default emoji
-    if (index === 0) {
-      rankEmoji = "🏆";
-    }// First place
-    else if (index === 1) {
-      rankEmoji = "🔥";
-    }// Second place
-    else if (index === 2) {
-      rankEmoji = "💪";
-    } // Third place
+    let rankEmoji = index === 0 ? "🏆" : index === 1 ? "🔥" : index === 2 ? "💪" : "😎";
 
     rankingTable.innerHTML += `<tr>
           <td>${index + 1} ${rankEmoji}</td>
@@ -95,21 +100,21 @@ async function updateRanking(rankingData) {
   });
 }
 
+// Update Progress Bar
 function updateProgress(total) {
   const percentage = (total / 75000) * 100;
   document.getElementById("progressBar").style.width = percentage + "%";
-  document.getElementById("progressBar").textContent = Math.round(percentage)
-      + "%";
+  document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
   document.getElementById("totalHM").textContent = total;
 }
 
+// Draw Chart
 function drawChart(total) {
   const ctx = document.getElementById("myChart").getContext("2d");
   if (chart) {
     chart.destroy();
   }
 
-  // Fixed mountain shape data – feel free to adjust these points to tweak the mountain's form.
   const mountainData = [
     {x: 0, y: 0},
     {x: 10000, y: 8000},
@@ -118,32 +123,22 @@ function drawChart(total) {
     {x: 75000, y: 75000}
   ];
 
-  // Build the progress (green) dataset by following the mountain line.
-  const progressData = [];
-  progressData.push({x: mountainData[0].x, y: mountainData[0].y}); // Always start at the base
+  const progressData = [{x: 0, y: 0}];
 
-  // Walk through each segment of the mountain.
   for (let i = 0; i < mountainData.length - 1; i++) {
-    const startPoint = mountainData[i];
-    const endPoint = mountainData[i + 1];
-    // If the progress (total) has exceeded the end of this segment, add the full end point.
-    if (total >= endPoint.y) {
-      progressData.push({x: endPoint.x, y: endPoint.y});
-    }
-    // If total falls between the start and end, interpolate the x value.
-    else if (total > startPoint.y) {
-      const ratio = (total - startPoint.y) / (endPoint.y - startPoint.y);
-      const interpolatedX = startPoint.x + ratio * (endPoint.x - startPoint.x);
-      progressData.push({x: interpolatedX, y: total});
+    const start = mountainData[i];
+    const end = mountainData[i + 1];
+
+    if (total >= end.y) {
+      progressData.push({x: end.x, y: end.y});
+    } else if (total > start.y) {
+      const ratio = (total - start.y) / (end.y - start.y);
+      progressData.push({x: start.x + ratio * (end.x - start.x), y: total});
       break;
     } else {
-      // If total isn’t even above the start of this segment, break out.
       break;
     }
   }
-
-  const lastPoint = progressData[progressData.length - 1];
-  const currentProgressData = [lastPoint];
 
   chart = new Chart(ctx, {
     type: "line",
@@ -157,12 +152,8 @@ function drawChart(total) {
           fill: true,
           tension: 0.4,
           borderWidth: 2,
-          pointRadius: function (context) {
-            return (context.dataIndex === context.dataset.data.length - 1) ? 10
-                : 0;
-          },
+          pointRadius: 5,
           pointBackgroundColor: "green",
-          pointStyle: "circle",
           z: 2
         },
         {
@@ -173,108 +164,52 @@ function drawChart(total) {
           fill: true,
           tension: 0.4,
           borderWidth: 2,
-          pointRadius: function (context) {
-            const xValue = context.parsed.x;
-            if (xValue === 10000 || xValue === 25000 || xValue === 50000
-                || xValue === 75000) {
-              return 4;
-            }
-            return 0;
-          },
-          pointBackgroundColor: "saddlebrown",
           z: 1
         }
       ]
     },
     options: {
       plugins: {
-        legend: {
-          display: false}
+        legend: { display: false }
       },
-      parsing: false,
       scales: {
-        x: {
-          type: "linear",
-          min: 0,
-          max: 75000,
-          ticks: {
-            callback: function (value) {
-              if (value === 0) {
-                return "Start";
-              }
-              if (value === 10000) {
-                return "10k";
-              }
-              if (value === 25000) {
-                return "25k";
-              }
-              if (value === 50000) {
-                return "50k";
-              }
-              if (value === 75000) {
-                return "75k";
-              }
-              return value;
-            }
-          }
-        },
-        y: {
-          min: 0,
-          max: 75000,
-          ticks: {
-            callback: function (value) {
-              return value;
-            },
-            display: false
-          }
-
-        }
+        x: { type: "linear", min: 0, max: 75000 },
+        y: { min: 0, max: 75000, display: false }
       }
     }
-
   });
 }
 
+// Check Goals
 function checkGoals(total) {
   const goals = [10000, 25000, 50000, 75000];
   goals.forEach((goal, index) => {
     const checkbox = document.getElementById(`goal${index + 1}Check`);
     const listItem = checkbox.parentElement;
-    if (total >= goal) {
-      checkbox.checked = true;
-      listItem.classList.add("completed");
-    } else {
-      checkbox.checked = false;
-      listItem.classList.remove("completed");
-    }
+    checkbox.checked = total >= goal;
+    listItem.classList.toggle("completed", total >= goal);
   });
   updateGoalBanner(total);
 }
 
+// Update Goal Banner
 function updateGoalBanner(total) {
   const goals = [10000, 25000, 50000, 75000];
-  let lastGoal = "-";
   let lastReachedGoal = "";
 
   goals.forEach((goal, index) => {
     const goalCheck = document.getElementById(`goal${index + 1}Check`);
     if (total >= goal) {
       goalCheck.checked = true;
-      lastReachedGoal = goalCheck.nextElementSibling.innerHTML; // Get the goal description
-    } else {
-      goalCheck.checked = false;
+      lastReachedGoal = goalCheck.nextElementSibling.innerHTML;
     }
   });
 
-  if (lastReachedGoal === "") {
-    document.getElementById(
-        "goalBanner").innerHTML = "Noch kein Ziel erreicht 😮";
-  } else {
-    document.getElementById(
-        "goalBanner").innerHTML = `🎉 Ziel erreicht: ${lastReachedGoal.replace(
-        /<[^>]*>/g, '')}!`;
-  }
+  document.getElementById("goalBanner").innerHTML = lastReachedGoal
+      ? `🎉 Ziel erreicht: ${lastReachedGoal.replace(/<[^>]*>/g, '')}!`
+      : "Noch kein Ziel erreicht 😮";
   document.getElementById("goalBanner").style.display = "block";
 }
 
+// Load Data on Page Load
 loadData();
