@@ -90,13 +90,30 @@ async function updateRanking(rankingData) {
   rankingTable.innerHTML = "<tr><th>Platz</th><th>Name</th><th>HM</th></tr>";
 
   rankingData.forEach((row, index) => {
-    let rankEmoji = index === 0 ? "🏆" : index === 1 ? "🔥" : index === 2 ? "💪" : "😎";
+    let rankEmoji;
+    let rankText;
 
-    rankingTable.innerHTML += `<tr>
-          <td>${index + 1} ${rankEmoji}</td>
-          <td>${row[0]}</td>
-          <td>${row[1]}</td>
-        </tr>`;
+    if (index === 0) {
+      if (row[0].toLowerCase() === "max") {
+        rankText = "Max";
+      } else {
+        rankText = 1;
+      }
+      rankEmoji = "🏆";
+    } else if (index === 1) {
+      rankEmoji = "🔥";
+      rankText = index + 1;
+    } else if (index === 2) {
+      rankEmoji = "💪";
+      rankText = index + 1;
+    } else {
+      rankEmoji = "😎";
+      rankText = index + 1;
+    }
+
+    rankingTable.innerHTML += `
+      <tr><td>${rankText} ${rankEmoji}</td><td>${row[0]}</td><td>${row[1]}</td></tr>
+    `;
   });
 }
 
