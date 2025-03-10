@@ -134,10 +134,20 @@ function drawChart(total) {
 
   const mountainData = [
     {x: 0, y: 0},
-    {x: 10000, y: 8000},
-    {x: 25000, y: 15000},
-    {x: 50000, y: 40000},
-    {x: 75000, y: 75000}
+    {x: 10000, y: 10000},
+    {x: 15000, y: 8000},
+
+    {x: 25000, y: 25000},
+    {x: 33000, y: 20000},
+
+    {x: 50000, y: 50000},
+    {x: 55000, y: 45000},
+
+    {x: 75000, y: 75000},
+    {x: 79000, y: 70000},
+
+    {x: 90000, y: 90000},
+
   ];
 
   const progressData = [{x: 0, y: 0}];
@@ -169,7 +179,7 @@ function drawChart(total) {
           fill: true,
           tension: 0.4,
           borderWidth: 2,
-          pointRadius: 5,
+          pointRadius: 0,
           pointBackgroundColor: "green",
           z: 2
         },
@@ -177,11 +187,13 @@ function drawChart(total) {
           label: "Ziele",
           data: mountainData,
           borderColor: "saddlebrown",
-          backgroundColor: "rgba(139, 69, 19, 0.2)",
+          backgroundColor: "rgba(139, 69, 19, 0.6)",
           fill: true,
           tension: 0.4,
           borderWidth: 2,
-          z: 1
+          pointRadius: 0,
+          pointBackgroundColor: "saddlebrown",
+          z: 2
         }
       ]
     },
@@ -190,8 +202,8 @@ function drawChart(total) {
         legend: { display: false }
       },
       scales: {
-        x: { type: "linear", min: 0, max: 75000 },
-        y: { min: 0, max: 75000, display: false }
+        x: { type: "linear", min: 0, max: 90000 },
+        y: { min: 0, max: 90000, display: false }
       }
     }
   });
