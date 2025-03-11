@@ -195,10 +195,11 @@ th, td {
   margin-bottom: 20px; /* Space between sections */
   border-radius: 10px; /* Optional: Rounded corners */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+  align-items: center;
   text-align: center;
 
   :last-child {
-    text-align: left; /* Align text to the left */
+    /*text-align: left; !* Align text to the left *!*/
   }
 }
 
