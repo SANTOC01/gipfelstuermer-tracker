@@ -13,14 +13,20 @@ body {
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: 3rem;
     font-weight: bold;
     color: white;
-    -webkit-text-stroke: 1px black;
-    -webkit-text-fill-color: white; /* Ensures text remains solid white */
     text-align: center;
     font-family: Arial, sans-serif;
+
+    /* Soft border around text */
+    text-shadow:
+        -2px -2px 3px black,
+        2px -2px 3px black,
+        -2px  2px 3px black,
+        2px  2px 3px black;
   }
+
 
   margin: 0; /* Remove default margin */
   padding: 0; /* Remove default padding */
@@ -42,6 +48,11 @@ img {
   height: 35%;
   width: 35%;
   float: left;
+}
+
+a {
+  color: white;
+  font-size: 70%;
 }
 
 
