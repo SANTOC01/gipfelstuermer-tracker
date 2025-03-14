@@ -215,10 +215,12 @@ function showUpcomingEvents() {
     { name: "SOPREMA Neckar Run Mannheim", date: "2025-04-06" },
     { name: "Turmbergrennen", date: "2025-05-24" },
     { name: "Mörlenbacher-Volkslauf", date: "2025-05-04" },
+    { name: "Altstadtlauf Heppenheim", date: "2025-06-13" },
     { name: "BAUHAUS Firmenlauf", date: "2025-06-26" },
     { name: "Altstadtlauf Weinheim", date: "2025-05-11" },
     { name: "Weinheimtrails", date: "2025-07-27" },
     { name: "Trail Marathon Heidelberg", date: "2025-09-21" },
+    { name: "Herbstlauf Weinheim", date: "2025-09-29" },
     { name: "Frankfurt Marathon", date: "2025-10-26" }
   ];
 
