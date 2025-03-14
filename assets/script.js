@@ -208,6 +208,56 @@ function drawChart(total) {
     }
   });
 }
+function showUpcomingEvents() {
+  const events = [
+    { name: "Hemsbacher Altstadtlauf", date: "2025-04-05" },
+    { name: "SOPREMA Neckar Run Mannheim", date: "2025-04-06" },
+    { name: "Turmbergrennen", date: "2025-05-24" },
+    { name: "Mörlenbacher-Volkslauf", date: "2025-05-04" },
+    { name: "BAUHAUS Firmenlauf", date: "2025-06-26" },
+    { name: "Altstadtlauf Weinheim", date: "2025-05-11" },
+    { name: "Weinheimtrails", date: "2025-07-27" },
+    { name: "Trail Marathon Heidelberg", date: "2025-09-21" }
+  ];
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Remove time for accurate day comparison
+
+  const upcoming = events
+  .map(event => {
+    event.dateObj = new Date(event.date);
+    return event;
+  })
+  .filter(event => event.dateObj >= today)
+  .sort((a, b) => a.dateObj - b.dateObj);
+
+  const list = document.getElementById("eventList");
+  list.innerHTML = ""; // Clear previous
+
+  upcoming.forEach(event => {
+    const li = document.createElement("li");
+
+    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = event.dateObj.toLocaleDateString("de-DE", options);
+
+    const daysLeft = Math.ceil((event.dateObj - today) / (1000 * 60 * 60 * 24));
+
+    li.innerHTML = `
+        <div class="event-left">
+          <strong>${event.name}</strong><br>
+          <small>📅 ${formattedDate}</small>
+        </div>
+        <div class="event-right">
+          <span class="days-left">🕒 ${daysLeft} Tage</span>
+        </div>
+      `;
+    li.classList.add("event-row");
+    list.appendChild(li);
+  });
+}
+
+// Run after page is ready
+document.addEventListener("DOMContentLoaded", showUpcomingEvents);
 
 // Check Goals
 function checkGoals(total) {
