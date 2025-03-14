@@ -210,6 +210,7 @@ function drawChart(total) {
 }
 function showUpcomingEvents() {
   const events = [
+    { name: "Frankfurter Mainova Halbmarathon", date: "2025-03-16" },
     { name: "Hemsbacher Altstadtlauf", date: "2025-04-05" },
     { name: "SOPREMA Neckar Run Mannheim", date: "2025-04-06" },
     { name: "Turmbergrennen", date: "2025-05-24" },
@@ -217,7 +218,8 @@ function showUpcomingEvents() {
     { name: "BAUHAUS Firmenlauf", date: "2025-06-26" },
     { name: "Altstadtlauf Weinheim", date: "2025-05-11" },
     { name: "Weinheimtrails", date: "2025-07-27" },
-    { name: "Trail Marathon Heidelberg", date: "2025-09-21" }
+    { name: "Trail Marathon Heidelberg", date: "2025-09-21" },
+    { name: "Frankfurt Marathon", date: "2025-10-26" }
   ];
 
   const today = new Date();
