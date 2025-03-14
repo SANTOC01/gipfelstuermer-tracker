@@ -218,6 +218,7 @@ function showUpcomingEvents() {
     { name: "Altstadtlauf Heppenheim", date: "2025-06-13" },
     { name: "BAUHAUS Firmenlauf Mannheim", date: "2025-06-26" },
     { name: "Altstadtlauf Weinheim", date: "2025-05-11" },
+    { name: "Darmstadt Trails", date: "2025-06-07" }, 
     { name: "Weinheimtrails", date: "2025-07-27" },
     { name: "Trail Marathon Heidelberg", date: "2025-09-21" },
     { name: "Herbstlauf Weinheim", date: "2025-09-29" },
