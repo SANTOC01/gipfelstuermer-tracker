@@ -223,18 +223,19 @@ function showUpcomingEvents() {
   ];
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Remove time for accurate day comparison
+  today.setHours(0, 0, 0, 0); // Remove time for accurate comparison
 
   const upcoming = events
   .map(event => {
     event.dateObj = new Date(event.date);
+    event.dateObj.setHours(0, 0, 0, 0); // Ensure event date is also at midnight
     return event;
   })
   .filter(event => event.dateObj >= today)
   .sort((a, b) => a.dateObj - b.dateObj);
 
   const list = document.getElementById("eventList");
-  list.innerHTML = ""; // Clear previous
+  list.innerHTML = ""; // Clear previous entries
 
   upcoming.forEach(event => {
     const li = document.createElement("li");
@@ -242,7 +243,8 @@ function showUpcomingEvents() {
     const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     const formattedDate = event.dateObj.toLocaleDateString("de-DE", options);
 
-    const daysLeft = Math.ceil((event.dateObj - today) / (1000 * 60 * 60 * 24));
+    // Calculate daysLeft without time component
+    const daysLeft = Math.round((event.dateObj - today) / (1000 * 60 * 60 * 24));
 
     li.innerHTML = `
         <div class="event-left">
