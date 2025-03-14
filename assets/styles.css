@@ -197,6 +197,8 @@ th, td {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
   align-items: center;
   text-align: center;
+  max-height: 400px; /* Adjust the height as needed */
+  overflow-y: auto;
 
   :last-child {
     /*text-align: left; !* Align text to the left *!*/
