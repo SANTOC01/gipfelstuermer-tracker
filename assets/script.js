@@ -1,4 +1,4 @@
-const sheetURL = "https://script.google.com/macros/s/AKfycbxdhF28lQossWtOERyX9Xzv5xtwuWKV8ca5F3IIl-2jomb2IgNgvchrjSQPbyKnQBjZ/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbyQiMED1pttFOEVCJ9SX8Lhxxv7WvwjQjdrdoynQCSEfE0ZwXto0LBIW4jirxnmwaJT/exec";
 let chart; // Global chart instance
 
 // Toast Notification Function
@@ -238,6 +238,7 @@ async function showUpcomingEvents() {
       li.innerHTML = `
         <div class="event-left">
           <strong>${event.name}</strong><br>
+          <small>${event.dist}</small><br>
           <small>📅 ${formattedDate}</small>
         </div>
         <div class="event-right">

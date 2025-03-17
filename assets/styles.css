@@ -298,3 +298,36 @@ ul li {
   font-weight: bold;
   white-space: nowrap;
 }
+
+.info-container {
+  position: relative;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.info-icon {
+  width: 1em; /* Adjust to match the font size of the <h2> */
+  height: auto;
+  cursor: pointer;
+}
+
+.info-tooltip {
+  visibility: hidden;
+  position: absolute;
+  background-color: #f9f9f9;
+  color: #333;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+  z-index: 1;
+  top: 100%; /* Positions the tooltip below the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.info-container:hover .info-tooltip {
+  visibility: visible;
+}
