@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", showUpcomingEvents);
 
 // Check Goals
 function checkGoals(total) {
-  const goals = [10000, 25000, 50000, 75000];
+  const goals = [10000, 25000, 50000, 75000, 100000];
   goals.forEach((goal, index) => {
     const checkbox = document.getElementById(`goal${index + 1}Check`);
     const listItem = checkbox.parentElement;
@@ -271,7 +271,7 @@ function checkGoals(total) {
 
 // Update Goal Banner
 function updateGoalBanner(total) {
-  const goals = [10000, 25000, 50000, 75000];
+  const goals = [10000, 25000, 50000, 75000, 100000];
   let lastReachedGoal = "";
 
   goals.forEach((goal, index) => {
