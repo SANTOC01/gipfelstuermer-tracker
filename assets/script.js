@@ -119,7 +119,7 @@ async function updateRanking(rankingData) {
 
 // Update Progress Bar
 function updateProgress(total) {
-  const percentage = (total / 75000) * 100;
+  const percentage = (total / 100000) * 100;
   document.getElementById("progressBar").style.width = percentage + "%";
   document.getElementById("progressBar").textContent = Math.round(percentage) + "%";
   document.getElementById("totalHM").textContent = total;
@@ -135,18 +135,22 @@ function drawChart(total) {
   const mountainData = [
     {x: 0, y: 0},
     {x: 10000, y: 10000},
-    {x: 15000, y: 8000},
+    {x: 12500, y: 8000},
 
     {x: 25000, y: 25000},
-    {x: 33000, y: 20000},
+    {x: 29000, y: 20000},
 
     {x: 50000, y: 50000},
     {x: 55000, y: 45000},
 
     {x: 75000, y: 75000},
-    {x: 79000, y: 70000},
+    {x: 82000, y: 69000},
 
-    {x: 90000, y: 50000},
+    {x: 100000, y: 100000},
+    {x: 103000, y: 93000},
+
+    {x: 110000, y: 70000},
+
 
   ];
 
@@ -202,8 +206,8 @@ function drawChart(total) {
         legend: { display: false }
       },
       scales: {
-        x: { type: "linear", min: 0, max: 90000 },
-        y: { min: 0, max: 90000, display: false }
+        x: { type: "linear", min: 0, max: 110000},
+        y: { min: 0, max: 120000, display: false }
       }
     }
   });
