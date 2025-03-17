@@ -1,4 +1,4 @@
-const sheetURL = "https://script.google.com/macros/s/AKfycbxbt57SZfghrZTx9FXgl2IkqJfkQzvK1slJDJFE_osfPfJHRXXypsOp-zXRh2d9rzPQ/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbxdhF28lQossWtOERyX9Xzv5xtwuWKV8ca5F3IIl-2jomb2IgNgvchrjSQPbyKnQBjZ/exec";
 let chart; // Global chart instance
 
 // Toast Notification Function
@@ -208,58 +208,46 @@ function drawChart(total) {
     }
   });
 }
-function showUpcomingEvents() {
-  const events = [
-    { name: "Frankfurt Halbmarathon", date: "2025-03-16" },
-    { name: "Altstadtlauf Hemsbach", date: "2025-04-05" },
-    { name: "Neckar Run Mannheim", date: "2025-04-06" },
-    { name: "Turmbergrennen Karlsruhe", date: "2025-05-24" },
-    { name: "Volkslauf Mörlenbach", date: "2025-05-04" },
-    { name: "Altstadtlauf Heppenheim", date: "2025-06-13" },
-    { name: "BAUHAUS Firmenlauf Mannheim", date: "2025-06-26" },
-    { name: "Altstadtlauf Weinheim", date: "2025-05-11" },
-    { name: "Weinheimtrails", date: "2025-07-27" },
-    { name: "Trail Marathon Heidelberg", date: "2025-09-21" },
-    { name: "Herbstlauf Weinheim", date: "2025-09-29" },
-    { name: "Frankfurt Marathon", date: "2025-10-26" }
-  ];
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Remove time for accurate comparison
 
-  const upcoming = events
-  .map(event => {
-    event.dateObj = new Date(event.date);
-    event.dateObj.setHours(0, 0, 0, 0); // Ensure event date is also at midnight
-    return event;
-  })
-  .filter(event => event.dateObj >= today)
-  .sort((a, b) => a.dateObj - b.dateObj);
+async function showUpcomingEvents() {
+  try {
+    const res = await fetch(`${sheetURL}?action=getEvents`);
+    const events = await res.json();
 
-  const list = document.getElementById("eventList");
-  list.innerHTML = ""; // Clear previous entries
+    const container = document.getElementById("eventsList");
+    container.innerHTML = ""; // Clear any previous content
 
-  upcoming.forEach(event => {
-    const li = document.createElement("li");
+    events.forEach(event => {
+      const li = document.createElement("li");
 
-    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = event.dateObj.toLocaleDateString("de-DE", options);
-
-    // Calculate daysLeft without time component
-    const daysLeft = Math.round((event.dateObj - today) / (1000 * 60 * 60 * 24));
-
-    li.innerHTML = `
+      const [year, month, day] = event.date.split("-").map(Number);
+      const eventDate = new Date(year, month - 1, day + 1); // Create date without time
+      const formattedDate = eventDate.toLocaleDateString("de-DE", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+      li.innerHTML = `
         <div class="event-left">
           <strong>${event.name}</strong><br>
           <small>📅 ${formattedDate}</small>
         </div>
         <div class="event-right">
-          <span class="days-left">🕒 ${daysLeft} Tage</span>
+          <span class="days-left">🕒 ${event.daysLeft} Tage</span>
         </div>
       `;
-    li.classList.add("event-row");
-    list.appendChild(li);
-  });
+
+      li.classList.add("event-row");
+      container.appendChild(li);
+    });
+
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+  }
 }
 
 // Run after page is ready
