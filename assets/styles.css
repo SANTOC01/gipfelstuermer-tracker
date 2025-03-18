@@ -314,20 +314,29 @@ ul li {
 .info-tooltip {
   visibility: hidden;
   position: absolute;
-  background-color: #f9f9f9;
-  color: #333;
-  text-align: left;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9em;
-  z-index: 1;
-  top: 100%; /* Positions the tooltip below the icon */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.8); /* translucent white */
+  color: #222;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+  line-height: 1.4;
   white-space: nowrap;
+  text-align: left;
+
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .info-container:hover .info-tooltip {
   visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(8px);
+  pointer-events: auto;
 }
