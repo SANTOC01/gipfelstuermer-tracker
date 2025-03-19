@@ -14,7 +14,7 @@ function showToast(message) {
 
 // Submit Data Function
 async function submitData() {
-  let name = document.getElementById("name").value.trim().replace(' ', '');
+  let name = document.getElementById("name").value.replace(/\s$/, '');
   const hohenmeter = document.getElementById("hohenmeter").value;
 
   if (!name || !hohenmeter) {
