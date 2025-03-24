@@ -355,8 +355,11 @@ ul li {
   background-size: cover;
   background-position: center;
   color: white;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 1),
-  0 0 10px rgba(0, 0, 0, 1); /* Strong text stroke/shadow */
+  text-shadow:
+      -2px -2px 3px black,
+      2px -2px 3px black,
+      -2px  2px 3px black,
+      2px  2px 3px black; /* Strong text stroke/shadow */
   opacity: 1;
   transition: opacity 1.5s ease; /* smooth fade over 1.5s */
 }
