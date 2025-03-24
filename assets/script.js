@@ -330,12 +330,12 @@ async function showNextTraining() {
     // ⏱️ Fade out after 8.5 seconds
     setTimeout(() => {
       popup.classList.add("fade-out");
-    }, 8500);
+    }, 13000);
 
     // ⏳ Fully hide after 10 seconds
     setTimeout(() => {
       popup.style.display = "none";
-    }, 10000);
+    }, 17000);
 
   } catch (err) {
     console.error("Failed to load training data:", err);
