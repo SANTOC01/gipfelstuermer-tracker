@@ -292,68 +292,64 @@ function updateGoalBanner(total) {
   document.getElementById("goalBanner").style.display = "block";
 }
 
-async function showNextTrainingPopup() {
+async function showNextTraining() {
   try {
-    const response = await fetch(`${sheetURL}?action=training`);
-    const trainings = await response.json();
-
-    console.log("Getting next Training")
+    const res = await fetch(`${sheetURL}?action=training`);
+    const trainings = await res.json();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Find the next training in the future
+    // Find the next upcoming training
     const next = trainings
     .map(t => {
-      const [year, month, day] = t.date.split('-').map(Number);
-      return {
-        ...t,
-        dateObj: new Date(year, month - 1, day)
-      };
+      const date = new Date(t.date);
+      date.setHours(0, 0, 0, 0);
+      return { ...t, dateObj: date };
     })
     .filter(t => t.dateObj >= today)
     .sort((a, b) => a.dateObj - b.dateObj)[0];
 
-    if (!next) return;
+    if (!next) return; // No future training found
 
-    const dayFormatted = next.dateObj.toLocaleDateString("de-DE", {
-      weekday: "long",
-      day: "numeric",
-      month: "long"
-    });
+    const popup = document.getElementById("trainingPopup");
+    const dateText = next.dateObj.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    // Background image logic
-    const bgImages = {
-      "Dauerlauf": "url('images/dauerlauf.png')",
-      "Intervalle": "url('images/intervalle.png')",
-      "Pyramiden": "url('images/pyramiden.png')"
-    };
+    document.getElementById("trainingDate").innerText = `${dateText}, 18:00 Uhr`;
+    document.getElementById("trainingDescription").innerText = next.description;
 
-    const background = bgImages[next.type] || "none";
+    // Set background image based on type
+    let bgImage = "url('images/dauerlauf.png')";
+    if (next.type === "Dauerlauf") bgImage = "url('images/dauerlauf.png')";
+    else if (next.type === "Pyramiden") bgImage = "url('images/pyramiden.png')";
+    else if (next.type === "Intervalle") bgImage = "url('images/intervalle.png')";
 
-    // Build the popup
-    const popup = document.createElement("div");
-    popup.id = "trainingPopup";
-    popup.innerHTML = `
-      <div class="training-popup-content">
-        <h3>Nächstes Training: ${dayFormatted}, 18:00</h3>
-        <p>${next.description}</p>
-        <button onclick="this.parentElement.parentElement.remove()">Schließen</button>
-      </div>
-    `;
+    popup.style.backgroundImage = bgImage;
+    popup.style.display = "block";
 
-    popup.style.backgroundImage = background;
-    popup.style.backgroundSize = "cover";
-    popup.style.backgroundPosition = "center";
+    // ⏱️ Fade out after 8.5 seconds
+    setTimeout(() => {
+      popup.classList.add("fade-out");
+    }, 8500);
 
-    document.body.appendChild(popup);
+    // ⏳ Fully hide after 10 seconds
+    setTimeout(() => {
+      popup.style.display = "none";
+    }, 10000);
 
-  } catch (error) {
-    console.error("Fehler beim Laden des Trainings:", error);
+  } catch (err) {
+    console.error("Failed to load training data:", err);
   }
+
 }
 
-document.addEventListener("DOMContentLoaded", showNextTrainingPopup);
+// Close function
+function closeTrainingPopup() {
+  document.getElementById("trainingPopup").style.display = "none";
+}
+
+document.addEventListener("DOMContentLoaded", showNextTraining);
+
 
 // Load Data on Page Load
 loadData();

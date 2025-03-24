@@ -340,38 +340,78 @@ ul li {
   transform: translateX(-50%) translateY(8px);
   pointer-events: auto;
 }
+
 #trainingPopup {
-  position: fixed;
+  position: absolute;
   top: 10vh;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
-  max-width: 500px;
+  max-width: 300px;
   padding: 2rem;
   border-radius: 12px;
-  color: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   z-index: 1000;
-  background-color: rgba(0,0,0,0.6); /* Fallback */
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 1),
+  0 0 10px rgba(0, 0, 0, 1); /* Strong text stroke/shadow */
+  opacity: 1;
+  transition: opacity 1.5s ease; /* smooth fade over 1.5s */
 }
 
+/* Overlay for better readability */
 .training-popup-content {
-  background: rgba(0,0,0,0.5);
-  padding: 1rem;
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.85); /* Light semi-transparent background */
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.training-popup-content h3,
+/* Headline and text styling */
+.training-popup-content h3 {
+  margin: 0.5em 0;
+  font-size: 1.4rem;
+  color: #222;
+}
+
 .training-popup-content p {
   margin: 0.5em 0;
+  font-size: 1rem;
+  color: #333;
 }
 
+/* Button styling */
 .training-popup-content button {
-  background: #fff;
-  color: #333;
+  background: #333;
+  color: white;
   border: none;
   padding: 0.5em 1em;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 1rem;
+  transition: background 0.3s;
 }
+
+.training-popup-content button:hover {
+  background: #555;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 32px;
+  font-weight: bold;
+  color: red;
+  cursor: pointer;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.9); /* Makes it stand out */
+  z-index: 1001;
+}
+
+#trainingPopup.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
