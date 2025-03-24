@@ -340,3 +340,38 @@ ul li {
   transform: translateX(-50%) translateY(8px);
   pointer-events: auto;
 }
+#trainingPopup {
+  position: fixed;
+  top: 10vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  padding: 2rem;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  z-index: 1000;
+  background-color: rgba(0,0,0,0.6); /* Fallback */
+}
+
+.training-popup-content {
+  background: rgba(0,0,0,0.5);
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.training-popup-content h3,
+.training-popup-content p {
+  margin: 0.5em 0;
+}
+
+.training-popup-content button {
+  background: #fff;
+  color: #333;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+}

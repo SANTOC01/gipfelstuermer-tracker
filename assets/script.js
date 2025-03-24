@@ -1,4 +1,7 @@
-const sheetURL = "https://script.google.com/macros/s/AKfycbyQiMED1pttFOEVCJ9SX8Lhxxv7WvwjQjdrdoynQCSEfE0ZwXto0LBIW4jirxnmwaJT/exec";
+
+
+
+const sheetURL = "https://script.google.com/macros/s/AKfycbwPfl13NfhTcXM141Pi_l1CTvEBA_o5_awYIv_uh93av3RuiR0viDVseU-Yrqv9nF80/exec";
 let chart; // Global chart instance
 
 // Toast Notification Function
@@ -289,5 +292,71 @@ function updateGoalBanner(total) {
   document.getElementById("goalBanner").style.display = "block";
 }
 
+async function showNextTrainingPopup() {
+  try {
+    const response = await fetch(`${sheetURL}?action=training`);
+    const trainings = await response.json();
+
+    console.log("Getting next Training")
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Find the next training in the future
+    const next = trainings
+    .map(t => {
+      const [year, month, day] = t.date.split('-').map(Number);
+      return {
+        ...t,
+        dateObj: new Date(year, month - 1, day)
+      };
+    })
+    .filter(t => t.dateObj >= today)
+    .sort((a, b) => a.dateObj - b.dateObj)[0];
+
+    if (!next) return;
+
+    const dayFormatted = next.dateObj.toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    });
+
+    // Background image logic
+    const bgImages = {
+      "Dauerlauf": "url('images/dauerlauf.png')",
+      "Intervalle": "url('images/intervalle.png')",
+      "Pyramiden": "url('images/pyramiden.png')"
+    };
+
+    const background = bgImages[next.type] || "none";
+
+    // Build the popup
+    const popup = document.createElement("div");
+    popup.id = "trainingPopup";
+    popup.innerHTML = `
+      <div class="training-popup-content">
+        <h3>Nächstes Training: ${dayFormatted}, 18:00</h3>
+        <p>${next.description}</p>
+        <button onclick="this.parentElement.parentElement.remove()">Schließen</button>
+      </div>
+    `;
+
+    popup.style.backgroundImage = background;
+    popup.style.backgroundSize = "cover";
+    popup.style.backgroundPosition = "center";
+
+    document.body.appendChild(popup);
+
+  } catch (error) {
+    console.error("Fehler beim Laden des Trainings:", error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", showNextTrainingPopup);
+
 // Load Data on Page Load
 loadData();
+
+
+
