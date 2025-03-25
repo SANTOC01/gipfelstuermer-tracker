@@ -333,6 +333,7 @@ async function showNextTraining() {
     if (next.type === "Dauerlauf") bgImage = "url('images/dauerlauf.png')";
     else if (next.type === "Pyramiden") bgImage = "url('images/pyramiden.png')";
     else if (next.type === "Intervalle") bgImage = "url('images/intervalle.png')";
+    else if (next.type === "Trail") bgImage = "url('images/trail.png')";
 
     popup.style.backgroundImage = bgImage;
     popup.style.display = "block";
@@ -353,12 +354,32 @@ async function showNextTraining() {
 
 }
 
+
+
+// Check if the popup has been shown before using localStorage
+let popupShown = localStorage.getItem("popupShown") === "true"; // Use "true" string for comparison
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Hide the popup initially
+  document.getElementById("trainingPopup").style.display = "none";
+
+  // After 5 seconds, show the popup only if it hasn't been shown yet
+  if (!popupShown) {
+    setTimeout(function() {
+      document.getElementById("trainingPopup").style.display = "block";
+      localStorage.setItem("popupShown", "true"); // Save flag to localStorage so it persists
+    }, 5000); // 5000 milliseconds (5 seconds)
+  }
+});
+
+document.addEventListener("DOMContentLoaded", showNextTraining);
+
 // Close function
 function closeTrainingPopup() {
   document.getElementById("trainingPopup").style.display = "none";
 }
 
-document.addEventListener("DOMContentLoaded", showNextTraining);
+
 
 
 // Load Data on Page Load
