@@ -325,7 +325,7 @@ async function showNextTraining() {
     const popup = document.getElementById("trainingPopup");
     const dateText = next.dateObj.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    document.getElementById("trainingDate").innerText = `${dateText}, 18:00 Uhr`;
+    document.getElementById("trainingDate").innerText = `${dateText}`;
     document.getElementById("trainingDescription").innerText = next.description;
 
     // Set background image based on type
