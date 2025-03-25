@@ -60,31 +60,41 @@ function formatDate(dateString) {
 
 // Load Data from Google Sheet
 async function loadData() {
-  const response = await fetch(`${sheetURL}?action=get`);
-  const data = await response.json();
+  const loader = document.getElementById("loading");
+  loader.style.display = "block"; // Show loader
 
-  const mainData = data.main.reverse();
-  const rankingData = data.ranking.sort((a, b) => b[1] - a[1]);
+  try {
+    const response = await fetch(`${sheetURL}?action=get`);
+    const data = await response.json();
 
-  document.getElementById("dataTable").innerHTML = "<tr><th>Name</th><th>HM</th><th>Datum</th><th>Löschen</th></tr>";
-  let total = 0;
+    loader.style.display = "none"; // Hide loader after data loads
 
-  mainData.forEach((row, index) => {
-    total += parseInt(row[1]);
-    document.getElementById("dataTable").innerHTML += `<tr>
-      <td>${row[0]}</td>
-      <td>${row[1]}</td>
-      <td>${formatDate(row[2])}</td>
-      <td>${index === 0
-        ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>`
-        : ""}</td>
-    </tr>`;
-  });
+    const mainData = data.main.reverse();
+    const rankingData = data.ranking.sort((a, b) => b[1] - a[1]);
 
-  updateProgress(total);
-  drawChart(total);
-  updateRanking(rankingData);
-  checkGoals(total);
+    document.getElementById("dataTable").innerHTML = "<tr><th>Name</th><th>HM</th><th>Datum</th><th>Löschen</th></tr>";
+    let total = 0;
+
+    mainData.forEach((row, index) => {
+      total += parseInt(row[1]);
+      document.getElementById("dataTable").innerHTML += `<tr>
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${formatDate(row[2])}</td>
+        <td>${index === 0 ? `<button onclick="deleteData('${row[0]}', '${row[1]}')">❌</button>` : ""}</td>
+      </tr>`;
+    });
+
+    updateProgress(total);
+    drawChart(total);
+    updateRanking(rankingData);
+    checkGoals(total);
+
+  } catch (error) {
+    loader.style.display = "none"; // Hide loader if there's an error
+    console.error("Error loading data:", error);
+    showToast("❌ Fehler beim Laden der Daten!");
+  }
 }
 
 // Update Ranking Table
