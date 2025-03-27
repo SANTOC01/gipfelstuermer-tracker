@@ -334,6 +334,11 @@ async function showNextTraining() {
     else if (next.type === "Pyramiden") bgImage = "url('images/pyramiden.png')";
     else if (next.type === "Intervalle") bgImage = "url('images/intervalle.png')";
     else if (next.type === "Trail") bgImage = "url('images/trail.png')";
+    else if (next.type === "ABC") bgImage = "url('images/ABC.png')";
+    else if (next.type === "Dauerlauf2") bgImage = "url('images/dauerlauf2.png')";
+    else if (next.type === "Dauerlauf3") bgImage = "url('images/dauerlauf3.png')";
+    else if (next.type === "Intervalle2") bgImage = "url('images/intervalle2.png')";
+    else if (next.type === "Sprints") bgImage = "url('images/sprints.png')";
 
     popup.style.backgroundImage = bgImage;
     popup.style.display = "block";
@@ -341,17 +346,16 @@ async function showNextTraining() {
     // ⏱️ Fade out after 8.5 seconds
     setTimeout(() => {
       popup.classList.add("fade-out");
-    }, 13000);
+    }, 9000);
 
     // ⏳ Fully hide after 10 seconds
     setTimeout(() => {
       popup.style.display = "none";
-    }, 17000);
+    }, 13000);
 
   } catch (err) {
     console.error("Failed to load training data:", err);
   }
-
 }
 
 
