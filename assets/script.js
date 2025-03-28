@@ -17,9 +17,8 @@ function showToast(message) {
 
 // Delete Data Function
 async function deleteData(name, hohenmeter) {
-  await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-
   showToast("🗑️ Eintrag gelöscht!");
+  await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
   loadData();
 }
 
@@ -27,8 +26,15 @@ async function deleteData(name, hohenmeter) {
 function validateHohenmeter() {
   const hmInput = document.getElementById("hohenmeter");
   const value = Number(hmInput.value);
+
   if (value > 1200) {
-    showToast("Sei ehrlich 🤥😏");
+    showToast("Sei ehrlich 🤥😏😳");
+
+  } else if (value > 350 && value < 1200) {
+    showToast("Boaah 😨");
+
+  } else if (value > 220 && value < 330) {
+    showToast("Stark 💪");
   }
 }
 
@@ -432,7 +438,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const enteredPattern = inputPattern.join("-");
 
     if (enteredPattern === correctPattern) {
-      showToast("✅ Eingetragen! Danke fürs Mitmachen! 🎉");
+
+      const name = document.getElementById("name").value.split(" ")[0];
+
+      showToast("✅ Eingetragen! Danke fürs Mitmachen, " + name + "! 🎉");
       submitData();
       unlockPopup.style.display = "none";
       document.body.classList.remove("lock-scroll");
