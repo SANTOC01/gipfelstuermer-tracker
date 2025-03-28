@@ -42,7 +42,25 @@
   <input type="text" id="name" placeholder="Dein Name"/>
   <input type="number" id="hohenmeter" placeholder="Höhenmeter" max="1200"
          oninput="validateHohenmeter()"/>
-  <button onclick="submitData()">Absenden</button>
+  <!-- Absenden Button -->
+  <button id="submitButton">Absenden</button>
+
+  <!-- Unlock Pattern Popup -->
+  <div id="unlockPopup" class="unlock-popup" style="display: none;">
+    <h2>Muster entsperren</h2>
+    <div class="unlock-grid">
+      <div class="grid-button" data-value="1"></div>
+      <div class="grid-button" data-value="2"></div>
+      <div class="grid-button" data-value="3"></div>
+      <div class="grid-button" data-value="4"></div>
+      <div class="grid-button" data-value="5"></div>
+      <div class="grid-button" data-value="6"></div>
+      <div class="grid-button" data-value="7"></div>
+      <div class="grid-button" data-value="8"></div>
+      <div class="grid-button" data-value="9"></div>
+    </div>
+    <button id="unlockCancel">Abbrechen</button>
+  </div>
 
   <h1> </h1>
 

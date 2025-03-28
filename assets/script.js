@@ -15,22 +15,6 @@ function showToast(message) {
   }, 3000); // Hide after 3 seconds
 }
 
-// Submit Data Function
-async function submitData() {
-  let name = document.getElementById("name").value.replace(/\s$/, '');
-  const hohenmeter = document.getElementById("hohenmeter").value;
-
-  if (!name || !hohenmeter) {
-    showToast("Bitte beide Felder ausfüllen! ⚠️");
-    return;
-  }
-
-  await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-
-  showToast("✅ Eingetragen! Danke fürs Mitmachen! 🎉");
-  loadData();
-}
-
 // Delete Data Function
 async function deleteData(name, hohenmeter) {
   await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
@@ -383,6 +367,103 @@ function closeTrainingPopup() {
   document.getElementById("trainingPopup").style.display = "none";
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const submitButton = document.getElementById("submitButton");
+  const unlockPopup = document.getElementById("unlockPopup");
+  const unlockCancel = document.getElementById("unlockCancel");
+  const gridButtons = document.querySelectorAll(".grid-button");
+
+  // Correct unlock pattern
+  const correctPattern = "1-4-7-8-9";
+  let inputPattern = [];
+  let isMouseDown = false;
+
+  // Show popup and lock scroll
+  submitButton.addEventListener("click", () => {
+    unlockPopup.style.display = "block";
+    document.body.classList.add("lock-scroll"); // Disable scroll
+  });
+
+  // Cancel popup and unlock scroll
+  unlockCancel.addEventListener("click", () => {
+    unlockPopup.style.display = "none";
+    document.body.classList.remove("lock-scroll"); // Enable scroll
+    resetPattern();
+  });
+
+  // Mouse and touch interactions
+  gridButtons.forEach(button => {
+    button.addEventListener("mousedown", () => {
+      isMouseDown = true;
+      addToPattern(button);
+    });
+    button.addEventListener("touchstart", () => {
+      isMouseDown = true;
+      addToPattern(button);
+    });
+
+    button.addEventListener("mouseover", () => {
+      if (isMouseDown) addToPattern(button);
+    });
+    button.addEventListener("touchmove", (event) => {
+      const touch = event.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (target && target.classList.contains("grid-button")) {
+        addToPattern(target);
+      }
+    });
+
+    button.addEventListener("mouseup", checkPattern);
+    button.addEventListener("touchend", checkPattern);
+  });
+
+  // Add to pattern
+  function addToPattern(button) {
+    const value = button.getAttribute("data-value");
+    if (!inputPattern.includes(value)) {
+      inputPattern.push(value);
+      button.classList.add("active");
+    }
+  }
+
+  // Check pattern
+  function checkPattern() {
+    isMouseDown = false;
+    const enteredPattern = inputPattern.join("-");
+
+    if (enteredPattern === correctPattern) {
+      showToast("✅ Eingetragen! Danke fürs Mitmachen! 🎉");
+      submitData();
+      unlockPopup.style.display = "none";
+      document.body.classList.remove("lock-scroll");
+    } else {
+      showToast("Muster falsch, versuche es erneut.");
+    }
+
+    resetPattern();
+  }
+
+  // Reset pattern
+  function resetPattern() {
+    inputPattern = [];
+    gridButtons.forEach(button => button.classList.remove("active"));
+  }
+
+  // Submit Data Function
+  async function submitData() {
+    let name = document.getElementById("name").value.replace(/\s$/, '');
+    const hohenmeter = document.getElementById("hohenmeter").value;
+
+    if (!name || !hohenmeter) {
+      showToast("Bitte beide Felder ausfüllen! ⚠️");
+      return;
+    }
+    unlockPopup.style.display = "block";
+
+    await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    loadData();
+  }
+});
 
 
 
