@@ -26,6 +26,7 @@ async function deleteData(name, hohenmeter) {
 function validateHohenmeter() {
   const hmInput = document.getElementById("hohenmeter");
   const value = Number(hmInput.value);
+  const name = document.getElementById("name").value.split(" ")[0];
 
   if (value > 1200) {
     showToast("Sei ehrlich 🤥😏😳");
@@ -34,7 +35,7 @@ function validateHohenmeter() {
     showToast("Boaah 😨");
 
   } else if (value > 220 && value < 330) {
-    showToast("Stark 💪");
+    showToast("Stark " + name + " 💪");
   }
 }
 
