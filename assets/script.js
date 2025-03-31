@@ -220,7 +220,7 @@ function drawChart(total) {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Remove time for accurate comparison
 
-/// Fetch and display events from the server
+// Fetch and display events from the server
 async function fetchEvents() {
   const response = await fetch(`${sheetURL}?action=getEvents`);
   const events = await response.json();
@@ -290,12 +290,60 @@ async function openEventModal(event) {
       participantList.appendChild(li);
     });
 
+    // Add event listener for the "+" button to show the participant form
+    const addParticipantBtn = document.getElementById('addParticipantBtn');
+    if (!addParticipantBtn.hasListener) {
+      addParticipantBtn.addEventListener('click', () => {
+        document.getElementById('addParticipantForm').style.display = 'block';
+      });
+      addParticipantBtn.hasListener = true;
+    }
+
+    // Fix: Remove any existing event listener to avoid duplicate submissions
+    const submitParticipant = document.getElementById('submitParticipant');
+    submitParticipant.replaceWith(submitParticipant.cloneNode(true)); // Detach old listener
+    const newSubmitParticipant = document.getElementById('submitParticipant');
+
+    // Add new event listener for form submission with the correct event context
+    newSubmitParticipant.addEventListener('click', async () => {
+      const participantName = document.getElementById('participantName').value;
+
+      if (participantName) {
+        // Disable the submit button to prevent multiple clicks
+        newSubmitParticipant.disabled = true;
+        loader.style.display = "block";
+
+        try {
+          // Use the current event name dynamically
+          await fetch(`${sheetURL}?action=addParticipant&eventName=${event.name}&participantName=${participantName}`);
+
+          // Add participant to the list
+          const li = document.createElement('li');
+          li.textContent = participantName;
+          participantList.appendChild(li);
+
+          // Hide the form after submitting
+          document.getElementById('addParticipantForm').style.display = 'none';
+          document.getElementById('participantName').value = '';
+        } catch (error) {
+          console.error("Error submitting participant:", error);
+          showToast("❌ Fehler beim Hinzufügen des Teilnehmers!");
+        } finally {
+          loader.style.display = "none";
+
+          // Re-enable the submit button after 5 seconds
+          setTimeout(() => {
+            newSubmitParticipant.disabled = false;
+          }, 5000);
+        }
+      }
+    });
+
     // Hide the loader and show the modal once the data is ready
     loader.style.display = "none";
-    modal.style.display = "flex"; // Show the modal (it will be centered)
+    modal.style.display = "flex"; // Show the modal
 
   } catch (error) {
-    // Hide the loader if there's an error
     loader.style.display = "none";
     console.error("Error loading participants:", error);
     showToast("❌ Fehler beim Laden der Teilnehmer!");
@@ -306,10 +354,8 @@ async function openEventModal(event) {
 const closeParticipantModal = document.getElementById('closeParticipantModal');
 closeParticipantModal.addEventListener('click', () => {
   const modal = document.getElementById('eventModal');
-  modal.style.display = 'none'; // Hide the modal
+  modal.style.display = 'none';
 });
-
-
 
 
 // Check Goals
