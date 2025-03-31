@@ -11,28 +11,28 @@
 <body>
 
 <div id="loading">
-  <img src="assets/loadingman.gif" alt="Loading..." />
+  <img src="assets/loadingman.gif" alt="Loading..."/>
 </div>
 
 
-<div> <img src="assets/logo.png" width="376" height="324"> </div>
+<div><img src="assets/logo.png" width="376" height="324"></div>
 
 
 <div class="content-wrapper">
 
-<div id="trainingPopup" class="popup">
-  <div class="popup-content">
-    <span class="close" onclick="closeTrainingPopup()">&times;</span>
-    <h2>Nächstes Training</h2>
-    <p id="trainingDate"></p>
-    <p id="trainingDescription"></p>
+  <div id="trainingPopup" class="popup">
+    <div class="popup-content">
+      <span class="close" onclick="closeTrainingPopup()">&times;</span>
+      <h2>Nächstes Training</h2>
+      <p id="trainingDate"></p>
+      <p id="trainingDescription"></p>
+    </div>
   </div>
-</div>
-
 
 
   <h1>
-    <a href="assets/Gipfelstürmer2025.pdf" target="_blank" style="text-decoration: none; color: inherit;">
+    <a href="assets/Gipfelstürmer2025.pdf" target="_blank"
+       style="text-decoration: none; color: inherit;">
       Gipfelstürmer Event 2025
     </a>
   </h1>
@@ -62,7 +62,7 @@
     <button id="unlockCancel">Abbrechen</button>
   </div>
 
-  <h1> </h1>
+  <h1></h1>
 
   <div class="content">
     <div class="table-wrapper">
@@ -135,18 +135,45 @@
             🟡 10KM<br>
             🟢 5KM<br>
             🌄 Trail
+          </span>
         </span>
-    </span>
           </h2>
+
+          <!-- Use only one list for the events -->
           <ul id="eventsList"></ul>
+          <!-- Event Modal -->
+          <div id="eventModal" class="modal">
+            <div class="modal-content">
+              <!-- Container for close button and "Schließen" -->
+              <div class="modal-header">
+                <button id="closeParticipantModal" class="close-button">Schließen</button>
+              </div>
+
+              <div id="eventDetails">
+
+              </div>
+
+              <button id="addParticipantBtn">+</button>
+
+              <div id="addParticipantForm" style="display: none;">
+                <input type="text" id="participantName" placeholder="Teilnehmer eingeben"/>
+                <button id="submitParticipant">Einfügen</button>
+              </div>
+
+              <ul id="participantList">
+                <!-- List of participants will go here -->
+              </ul>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
+
     </div>
-  </div>
+
+    <h1></h1>
+
+    <script src="assets/script.js"></script>
 </div>
-
-<h1> </h1>
-
-<script src="assets/script.js"></script>
 </body>
 </html>

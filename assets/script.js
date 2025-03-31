@@ -1,7 +1,7 @@
 
 
 
-const sheetURL = "https://script.google.com/macros/s/AKfycbwPfl13NfhTcXM141Pi_l1CTvEBA_o5_awYIv_uh93av3RuiR0viDVseU-Yrqv9nF80/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbz7Xov1tRjkjG85YAcCzL-bfCSzIZQeDseIGn2vjLSnfRgz3sou3CYp2md16wSYALne/exec";
 let chart; // Global chart instance
 
 // Toast Notification Function
@@ -220,13 +220,13 @@ function drawChart(total) {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Remove time for accurate comparison
 
-async function showUpcomingEvents() {
-  try {
-    const res = await fetch(`${sheetURL}?action=getEvents`);
-    const events = await res.json();
+/// Fetch and display events from the server
+async function fetchEvents() {
+  const response = await fetch(`${sheetURL}?action=getEvents`);
+  const events = await response.json();
 
-    const container = document.getElementById("eventsList");
-    container.innerHTML = ""; // Clear any previous content
+  const eventListContainer = document.getElementById('eventsList'); // Use eventsList, not eventList
+  eventListContainer.innerHTML = ''; // Clear the event list before adding new items
 
     events.forEach(event => {
       const li = document.createElement("li");
@@ -246,21 +246,71 @@ async function showUpcomingEvents() {
           <small>📅 ${formattedDate}</small>
         </div>
         <div class="event-right">
-          <span class="days-left">🕒 ${event.daysLeft} Tage</span>
         </div>
+          <span class="days-left">🕒 ${event.daysLeft} Tage</span>
+        
       `;
 
-      li.classList.add("event-row");
-      container.appendChild(li);
+      li.style.cursor = "pointer"; // Make the event clickable
+      li.addEventListener('click', () => openEventModal(event)); // Handle event click
+
+// Add 'event-row' class to the list item (li)
+      li.classList.add('event-row'); // This adds the CSS class to the li element
+    eventListContainer.appendChild(li); // Append each event as its own list item
+  });
+}
+
+// Call the fetchEvents function when the page loads
+window.onload = fetchEvents;
+
+// Function to open the event modal
+async function openEventModal(event) {
+  const loader = document.getElementById("loading");
+  const participantList = document.getElementById('participantList');
+  const modal = document.getElementById('eventModal');
+
+  // Show loader while fetching participants
+  loader.style.display = "block";
+
+  // Reset participant list to avoid showing stale data
+  participantList.innerHTML = '';
+
+  // Initially hide modal (it will be shown later after data is fetched)
+  modal.style.display = 'none';
+
+  try {
+    // Fetch participants for the clicked event
+    const response = await fetch(`${sheetURL}?action=getParticipants&eventName=${event.name}`);
+    const data = await response.json();
+
+    // Populate participant list with the new data
+    data.participants.forEach(participant => {
+      const li = document.createElement('li');
+      li.textContent = participant;
+      participantList.appendChild(li);
     });
 
+    // Hide the loader and show the modal once the data is ready
+    loader.style.display = "none";
+    modal.style.display = "flex"; // Show the modal (it will be centered)
+
   } catch (error) {
-    console.error("Failed to fetch events:", error);
+    // Hide the loader if there's an error
+    loader.style.display = "none";
+    console.error("Error loading participants:", error);
+    showToast("❌ Fehler beim Laden der Teilnehmer!");
   }
 }
 
-// Run after page is ready
-document.addEventListener("DOMContentLoaded", showUpcomingEvents);
+// Close event modal when the close button is clicked
+const closeParticipantModal = document.getElementById('closeParticipantModal');
+closeParticipantModal.addEventListener('click', () => {
+  const modal = document.getElementById('eventModal');
+  modal.style.display = 'none'; // Hide the modal
+});
+
+
+
 
 // Check Goals
 function checkGoals(total) {
