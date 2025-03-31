@@ -284,11 +284,19 @@ async function openEventModal(event) {
     const data = await response.json();
 
     // Populate participant list with the new data
+    participantList.innerHTML = ''; // Clear the list first
     data.participants.forEach(participant => {
       const li = document.createElement('li');
       li.textContent = participant;
       participantList.appendChild(li);
     });
+
+// If the list is still empty, show the cricket emoji
+    if (participantList.children.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = '🦗';
+      participantList.appendChild(li);
+    }
 
     // Add event listener for the "+" button to show the participant form
     const addParticipantBtn = document.getElementById('addParticipantBtn');
