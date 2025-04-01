@@ -15,11 +15,129 @@ function showToast(message) {
   }, 3000); // Hide after 3 seconds
 }
 
-// Delete Data Function
+function verifyUnlock(callback) {
+  const unlockPopup = document.getElementById("unlockPopup");
+  const gridButtons = document.querySelectorAll(".grid-button");
+  const unlockCancel = document.getElementById("unlockCancel");
+  const correctPattern = "1-4-7-8-9";
+  let inputPattern = [];
+  let isMouseDown = false;
+
+  // Show the popup and lock scroll
+  unlockPopup.style.display = "block";
+  document.body.classList.add("lock-scroll");
+
+
+  function resetGridState() {
+    return new Promise(resolve => {
+      gridButtons.forEach(button => {
+        button.classList.remove("active");
+      });
+      resolve();
+    });
+  }
+  resetGridState().then(() => console.log("Grid reset completed"));
+  // Event handler to add to the pattern
+  function addToPattern(button) {
+    const value = button.getAttribute("data-value");
+    if (!inputPattern.includes(value)) {
+      inputPattern.push(value);
+      button.classList.add("active");
+    }
+  }
+
+  // Function to check the pattern
+  function checkPattern() {
+    isMouseDown = false;
+    const enteredPattern = inputPattern.join("-");
+    if (enteredPattern === correctPattern) {
+      callback();
+      cleanup();
+    } else {
+      showToast("Muster falsch, versuche es erneut.");
+      cleanup();
+    }
+  }
+
+  // Detach existing event listeners to prevent duplication
+  gridButtons.forEach(button => {
+    button.replaceWith(button.cloneNode(true)); // Remove all existing event listeners
+  });
+
+  // Re-select the grid buttons after cloning
+  const newGridButtons = document.querySelectorAll(".grid-button");
+
+  // Reset the grid state before adding event listeners
+  resetGridState().then(() => console.log("Grid reset completed"));
+
+  // Attach event listeners
+  newGridButtons.forEach(button => {
+    button.addEventListener("mousedown", () => {
+      isMouseDown = true;
+      addToPattern(button);
+    });
+    button.addEventListener("touchstart", () => {
+      isMouseDown = true;
+      addToPattern(button);
+    });
+    button.addEventListener("mouseover", () => {
+      if (isMouseDown) addToPattern(button);
+    });
+    button.addEventListener("touchmove", (event) => {
+      const touch = event.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (target && target.classList.contains("grid-button")) {
+        addToPattern(target);
+      }
+    });
+    button.addEventListener("mouseup", checkPattern);
+    button.addEventListener("touchend", checkPattern);
+  });
+
+  // Cancel unlocking
+  unlockCancel.onclick = cleanup;
+
+  // Cleanup function to remove lock screen and listeners
+  function cleanup() {
+  // Clear the input pattern
+    resetGridState().then(() => console.log("Grid reset completed")); // Clear the grid's active state
+    unlockPopup.style.display = "none";
+    document.body.classList.remove("lock-scroll");
+  }
+}
+
+
+
+// Submit Data Function using lockscreen
+async function submitData() {
+  let name = document.getElementById("name").value.replace(/\s$/, '');
+  const hohenmeter = document.getElementById("hohenmeter").value;
+
+  if (!name || !hohenmeter) {
+    showToast("Bitte beide Felder ausfüllen! ⚠️");
+    return;
+  }
+
+  // Lock screen verification
+  verifyUnlock(async () => {
+    await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    loadData();
+    showToast("✅ Eintrag hinzugefügt!");
+  });
+}
+
+
+
 async function deleteData(name, hohenmeter) {
-  showToast("🗑️ Eintrag gelöscht!");
-  await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-  loadData();
+  // Prevent default action if triggered by a button in a form
+
+  const deletionAction = async () => {
+    showToast("🗑️ Eintrag gelöscht!");
+    await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
+    loadData();
+  };
+
+  verifyUnlock(deletionAction);
 }
 
 // Validate Höhenmeter Input
@@ -477,109 +595,6 @@ document.addEventListener("DOMContentLoaded", showNextTraining);
 function closeTrainingPopup() {
   document.getElementById("trainingPopup").style.display = "none";
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  const submitButton = document.getElementById("submitButton");
-  const unlockPopup = document.getElementById("unlockPopup");
-  const unlockCancel = document.getElementById("unlockCancel");
-  const gridButtons = document.querySelectorAll(".grid-button");
-
-  // Correct unlock pattern
-  const correctPattern = "1-4-7-8-9";
-  let inputPattern = [];
-  let isMouseDown = false;
-
-  // Show popup and lock scroll
-  submitButton.addEventListener("click", () => {
-    unlockPopup.style.display = "block";
-    document.body.classList.add("lock-scroll"); // Disable scroll
-  });
-
-  // Cancel popup and unlock scroll
-  unlockCancel.addEventListener("click", () => {
-    unlockPopup.style.display = "none";
-    document.body.classList.remove("lock-scroll"); // Enable scroll
-    resetPattern();
-  });
-
-  // Mouse and touch interactions
-  gridButtons.forEach(button => {
-    button.addEventListener("mousedown", () => {
-      isMouseDown = true;
-      addToPattern(button);
-    });
-    button.addEventListener("touchstart", () => {
-      isMouseDown = true;
-      addToPattern(button);
-    });
-
-    button.addEventListener("mouseover", () => {
-      if (isMouseDown) addToPattern(button);
-    });
-    button.addEventListener("touchmove", (event) => {
-      const touch = event.touches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (target && target.classList.contains("grid-button")) {
-        addToPattern(target);
-      }
-    });
-
-    button.addEventListener("mouseup", checkPattern);
-    button.addEventListener("touchend", checkPattern);
-  });
-
-  // Add to pattern
-  function addToPattern(button) {
-    const value = button.getAttribute("data-value");
-    if (!inputPattern.includes(value)) {
-      inputPattern.push(value);
-      button.classList.add("active");
-    }
-  }
-
-  // Check pattern
-  function checkPattern() {
-    isMouseDown = false;
-    const enteredPattern = inputPattern.join("-");
-
-    if (enteredPattern === correctPattern) {
-
-      const name = document.getElementById("name").value.split(" ")[0];
-
-      showToast("✅ Eingetragen! Danke fürs Mitmachen, " + name + "! 🎉");
-      submitData();
-      unlockPopup.style.display = "none";
-      document.body.classList.remove("lock-scroll");
-    } else {
-      showToast("Muster falsch, versuche es erneut.");
-    }
-
-    resetPattern();
-  }
-
-  // Reset pattern
-  function resetPattern() {
-    inputPattern = [];
-    gridButtons.forEach(button => button.classList.remove("active"));
-  }
-
-  // Submit Data Function
-  async function submitData() {
-    let name = document.getElementById("name").value.replace(/\s$/, '');
-    const hohenmeter = document.getElementById("hohenmeter").value;
-
-    if (!name || !hohenmeter) {
-      showToast("Bitte beide Felder ausfüllen! ⚠️");
-      return;
-    }
-    unlockPopup.style.display = "block";
-
-    await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
-    loadData();
-  }
-});
-
-
 
 // Load Data on Page Load
 loadData();
