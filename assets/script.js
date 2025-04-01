@@ -17,96 +17,150 @@ function showToast(message) {
 
 function verifyUnlock(callback) {
   const unlockPopup = document.getElementById("unlockPopup");
-  const gridButtons = document.querySelectorAll(".grid-button");
   const unlockCancel = document.getElementById("unlockCancel");
   const correctPattern = "1-4-7-8-9";
   let inputPattern = [];
   let isMouseDown = false;
+  let isTouchActive = false;
 
   // Show the popup and lock scroll
   unlockPopup.style.display = "block";
   document.body.classList.add("lock-scroll");
 
+  // Get fresh references to grid buttons
+  const gridButtons = document.querySelectorAll(".grid-button");
 
+  // Reset grid state function - properly resets the visual state
   function resetGridState() {
-    return new Promise(resolve => {
-      gridButtons.forEach(button => {
-        button.classList.remove("active");
-      });
-      resolve();
+    inputPattern = [];
+    gridButtons.forEach(button => {
+      button.classList.remove("active");
     });
   }
-  resetGridState().then(() => console.log("Grid reset completed"));
-  // Event handler to add to the pattern
+
+  // Reset grid immediately on open
+  resetGridState();
+
+  // Add to pattern with duplicate prevention
   function addToPattern(button) {
+    if (!button) return;
+
     const value = button.getAttribute("data-value");
     if (!inputPattern.includes(value)) {
       inputPattern.push(value);
+
+      // Add transition for smoother visual feedback
+      button.style.transition = "all 0.2s ease";
       button.classList.add("active");
+
+      // Optional: Add vibration feedback on mobile (if supported)
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
     }
   }
 
-  // Function to check the pattern
+  // Check pattern and handle success/failure
   function checkPattern() {
     isMouseDown = false;
+    isTouchActive = false;
+
     const enteredPattern = inputPattern.join("-");
     if (enteredPattern === correctPattern) {
-      callback();
       cleanup();
+      // Call the callback after cleanup to prevent potential issues
+      setTimeout(() => callback(), 100);
     } else {
       showToast("Muster falsch, versuche es erneut.");
-      cleanup();
+      resetGridState();
     }
   }
 
-  // Detach existing event listeners to prevent duplication
-  gridButtons.forEach(button => {
-    button.replaceWith(button.cloneNode(true)); // Remove all existing event listeners
-  });
-
-  // Re-select the grid buttons after cloning
-  const newGridButtons = document.querySelectorAll(".grid-button");
-
-  // Reset the grid state before adding event listeners
-  resetGridState().then(() => console.log("Grid reset completed"));
-
-  // Attach event listeners
-  newGridButtons.forEach(button => {
-    button.addEventListener("mousedown", () => {
-      isMouseDown = true;
-      addToPattern(button);
-    });
-    button.addEventListener("touchstart", () => {
-      isMouseDown = true;
-      addToPattern(button);
-    });
-    button.addEventListener("mouseover", () => {
-      if (isMouseDown) addToPattern(button);
-    });
-    button.addEventListener("touchmove", (event) => {
-      const touch = event.touches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (target && target.classList.contains("grid-button")) {
-        addToPattern(target);
-      }
-    });
-    button.addEventListener("mouseup", checkPattern);
-    button.addEventListener("touchend", checkPattern);
-  });
-
-  // Cancel unlocking
-  unlockCancel.onclick = cleanup;
-
-  // Cleanup function to remove lock screen and listeners
+  // Cleanup function - hides popup and removes class
   function cleanup() {
-  // Clear the input pattern
-    resetGridState().then(() => console.log("Grid reset completed")); // Clear the grid's active state
+    resetGridState();
     unlockPopup.style.display = "none";
     document.body.classList.remove("lock-scroll");
+
+    // Remove all event listeners
+    gridButtons.forEach(button => {
+      button.removeEventListener("mousedown", handleMouseDown);
+      button.removeEventListener("mouseover", handleMouseOver);
+      button.removeEventListener("mouseup", handleMouseUp);
+      button.removeEventListener("touchstart", handleTouchStart);
+      button.removeEventListener("touchmove", handleTouchMove);
+      button.removeEventListener("touchend", handleTouchEnd);
+    });
+
+    document.removeEventListener("mouseup", handleMouseUp);
+    unlockCancel.removeEventListener("click", handleCancel);
   }
+
+  // Event handler functions
+  function handleMouseDown(e) {
+    isMouseDown = true;
+    addToPattern(e.currentTarget);
+  }
+
+  function handleMouseOver(e) {
+    if (isMouseDown) {
+      addToPattern(e.currentTarget);
+    }
+  }
+
+  function handleMouseUp() {
+    if (isMouseDown) {
+      checkPattern();
+    }
+  }
+
+  function handleTouchStart(e) {
+    // Prevent default to stop screen movement
+    e.preventDefault();
+    isTouchActive = true;
+    addToPattern(e.currentTarget);
+  }
+
+  function handleTouchMove(e) {
+    if (!isTouchActive) return;
+
+    // Prevent default to stop screen movement
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (target && target.classList.contains("grid-button")) {
+      addToPattern(target);
+    }
+  }
+
+  function handleTouchEnd(e) {
+    // Prevent default to stop screen movement
+    e.preventDefault();
+    if (isTouchActive) {
+      checkPattern();
+    }
+  }
+
+  function handleCancel() {
+    cleanup();
+  }
+
+  // Add event listeners
+  gridButtons.forEach(button => {
+    button.addEventListener("mousedown", handleMouseDown);
+    button.addEventListener("mouseover", handleMouseOver);
+    button.addEventListener("touchstart", handleTouchStart, { passive: false });
+    button.addEventListener("touchmove", handleTouchMove, { passive: false });
+    button.addEventListener("touchend", handleTouchEnd, { passive: false });
+  });
+
+  // Add document-level mouseup to ensure we always catch the end of interaction
+  document.addEventListener("mouseup", handleMouseUp);
+
+  // Cancel unlocking
+  unlockCancel.addEventListener("click", handleCancel);
 }
-
-
 
 // Submit Data Function using lockscreen
 async function submitData() {
@@ -118,7 +172,6 @@ async function submitData() {
     return;
   }
 
-  // Lock screen verification
   verifyUnlock(async () => {
     await fetch(`${sheetURL}?action=add&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
     loadData();
@@ -126,18 +179,12 @@ async function submitData() {
   });
 }
 
-
-
 async function deleteData(name, hohenmeter) {
-  // Prevent default action if triggered by a button in a form
-
-  const deletionAction = async () => {
+  verifyUnlock(async () => {
     showToast("🗑️ Eintrag gelöscht!");
     await fetch(`${sheetURL}?action=delete&name=${encodeURIComponent(name)}&hohenmeter=${encodeURIComponent(hohenmeter)}`);
     loadData();
-  };
-
-  verifyUnlock(deletionAction);
+  });
 }
 
 // Validate Höhenmeter Input
