@@ -22,6 +22,32 @@ function verifyUnlock(callback) {
   let inputPattern = [];
   let isMouseDown = false;
   let isTouchActive = false;
+  let lastPoint = null;
+
+  // Create canvas for drawing lines
+  const gridContainer = unlockPopup.querySelector(".grid-container") || unlockPopup;
+  const canvas = document.createElement("canvas");
+  canvas.className = "pattern-canvas";
+  canvas.style.position = "absolute";
+  canvas.style.top = "0";
+  canvas.style.left = "0";
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.pointerEvents = "none"; // Allows clicks to pass through
+  canvas.style.zIndex = "1"; // Above buttons but below other UI
+
+  // Insert canvas as first child of the grid container
+  gridContainer.insertBefore(canvas, gridContainer.firstChild);
+
+  // Set canvas size to match container
+  const resizeCanvas = () => {
+    canvas.width = gridContainer.offsetWidth;
+    canvas.height = gridContainer.offsetHeight;
+    drawLines(); // Redraw lines when resizing
+  };
+
+  // Initial sizing
+  setTimeout(resizeCanvas, 0);
 
   // Show the popup and lock scroll
   unlockPopup.style.display = "block";
@@ -30,12 +56,64 @@ function verifyUnlock(callback) {
   // Get fresh references to grid buttons
   const gridButtons = document.querySelectorAll(".grid-button");
 
+  // Create a mapping of button elements to their positions
+  const buttonPositions = {};
+  gridButtons.forEach(button => {
+    const rect = button.getBoundingClientRect();
+    const containerRect = gridContainer.getBoundingClientRect();
+
+    // Store center position relative to the canvas
+    buttonPositions[button.getAttribute("data-value")] = {
+      x: rect.left + rect.width/2 - containerRect.left,
+      y: rect.top + rect.height/2 - containerRect.top
+    };
+  });
+
+  // Function to draw lines between connected points
+  function drawLines() {
+    if (!canvas.getContext) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (inputPattern.length <= 0) return;
+
+    ctx.beginPath();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(0, 150, 255, 0.8)";
+    ctx.lineCap = "round";
+
+    // Draw lines between all points in the pattern
+    for (let i = 0; i < inputPattern.length; i++) {
+      const point = buttonPositions[inputPattern[i]];
+      if (point) {
+        if (i === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      }
+    }
+
+    // If there's an active touch/mouse point, draw a line to the current position
+    if (lastPoint && (isMouseDown || isTouchActive)) {
+      ctx.lineTo(lastPoint.x, lastPoint.y);
+    }
+
+    ctx.stroke();
+  }
+
   // Reset grid state function - properly resets the visual state
   function resetGridState() {
     inputPattern = [];
     gridButtons.forEach(button => {
       button.classList.remove("active");
     });
+
+    // Clear the canvas
+    if (canvas.getContext) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   }
 
   // Reset grid immediately on open
@@ -48,15 +126,10 @@ function verifyUnlock(callback) {
     const value = button.getAttribute("data-value");
     if (!inputPattern.includes(value)) {
       inputPattern.push(value);
-
-      // Add transition for smoother visual feedback
-      button.style.transition = "all 0.2s ease";
       button.classList.add("active");
 
-      // Optional: Add vibration feedback on mobile (if supported)
-      if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(50);
-      }
+      // Redraw lines when pattern changes
+      drawLines();
     }
   }
 
@@ -64,6 +137,7 @@ function verifyUnlock(callback) {
   function checkPattern() {
     isMouseDown = false;
     isTouchActive = false;
+    lastPoint = null;
 
     const enteredPattern = inputPattern.join("-");
     if (enteredPattern === correctPattern) {
@@ -82,6 +156,11 @@ function verifyUnlock(callback) {
     unlockPopup.style.display = "none";
     document.body.classList.remove("lock-scroll");
 
+    // Remove canvas
+    if (canvas && canvas.parentNode) {
+      canvas.parentNode.removeChild(canvas);
+    }
+
     // Remove all event listeners
     gridButtons.forEach(button => {
       button.removeEventListener("mousedown", handleMouseDown);
@@ -93,12 +172,18 @@ function verifyUnlock(callback) {
     });
 
     document.removeEventListener("mouseup", handleMouseUp);
+    document.removeEventListener("mousemove", handleMouseMove);
     unlockCancel.removeEventListener("click", handleCancel);
   }
 
   // Event handler functions
   function handleMouseDown(e) {
     isMouseDown = true;
+    const rect = gridContainer.getBoundingClientRect();
+    lastPoint = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
     addToPattern(e.currentTarget);
   }
 
@@ -106,6 +191,17 @@ function verifyUnlock(callback) {
     if (isMouseDown) {
       addToPattern(e.currentTarget);
     }
+  }
+
+  function handleMouseMove(e) {
+    if (!isMouseDown) return;
+
+    const rect = gridContainer.getBoundingClientRect();
+    lastPoint = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+    drawLines();
   }
 
   function handleMouseUp() {
@@ -118,6 +214,14 @@ function verifyUnlock(callback) {
     // Prevent default to stop screen movement
     e.preventDefault();
     isTouchActive = true;
+
+    const touch = e.touches[0];
+    const rect = gridContainer.getBoundingClientRect();
+    lastPoint = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+
     addToPattern(e.currentTarget);
   }
 
@@ -128,10 +232,18 @@ function verifyUnlock(callback) {
     e.preventDefault();
 
     const touch = e.touches[0];
+    const rect = gridContainer.getBoundingClientRect();
+    lastPoint = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+
     const target = document.elementFromPoint(touch.clientX, touch.clientY);
     if (target && target.classList.contains("grid-button")) {
       addToPattern(target);
     }
+
+    drawLines();
   }
 
   function handleTouchEnd(e) {
@@ -155,11 +267,15 @@ function verifyUnlock(callback) {
     button.addEventListener("touchend", handleTouchEnd, { passive: false });
   });
 
-  // Add document-level mouseup to ensure we always catch the end of interaction
+  // Add document-level mouse event listeners
   document.addEventListener("mouseup", handleMouseUp);
+  document.addEventListener("mousemove", handleMouseMove);
 
   // Cancel unlocking
   unlockCancel.addEventListener("click", handleCancel);
+
+  // Handle window resize
+  window.addEventListener("resize", resizeCanvas);
 }
 
 // Submit Data Function using lockscreen

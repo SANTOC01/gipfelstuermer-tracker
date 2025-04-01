@@ -478,8 +478,17 @@ body.lock-scroll {
 
 }
 
+.grid-container {
+  position: relative; /* Make sure this is set for proper canvas positioning */
+}
+
+.pattern-canvas {
+  touch-action: none; /* Prevents touch scrolling gestures */
+}
+
 .grid-button.active {
-  background-color: #4caf50;
+  background-color: rgba(25, 184, 33, 0.51); /* Match the line color */
+  transition: background-color 0.2s ease;
 }
 
 
