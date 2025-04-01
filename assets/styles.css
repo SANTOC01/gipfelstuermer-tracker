@@ -386,7 +386,6 @@ ul li {
 
 /* Overlay for better readability */
 .training-popup-content {
-  background-color: rgba(255, 255, 255, 0.85); /* Light semi-transparent background */
   padding: 1rem 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -499,7 +498,7 @@ body.lock-scroll {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent background */
   justify-content: center; /* Centers modal horizontally */
   align-items: center; /* Centers modal vertically */
   z-index: 9999; /* Ensure it's on top */
