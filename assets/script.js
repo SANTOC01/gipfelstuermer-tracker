@@ -18,6 +18,10 @@ function showToast(message) {
 function verifyUnlock(callback) {
   const unlockPopup = document.getElementById("unlockPopup");
   const unlockCancel = document.getElementById("unlockCancel");
+
+  //1-2-3
+  //4-5-6
+  //7-8-9
   const correctPattern = "1-4-7-8-9";
   let inputPattern = [];
   let isMouseDown = false;
@@ -79,7 +83,7 @@ function verifyUnlock(callback) {
 
     ctx.beginPath();
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "rgba(0, 150, 255, 0.8)";
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
     ctx.lineCap = "round";
 
     // Draw lines between all points in the pattern
@@ -128,8 +132,10 @@ function verifyUnlock(callback) {
       inputPattern.push(value);
       button.classList.add("active");
 
-      // Redraw lines when pattern changes
-      drawLines();
+      // Optional: Add vibration feedback on mobile (if supported)
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
     }
   }
 
