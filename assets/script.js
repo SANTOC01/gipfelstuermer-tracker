@@ -321,7 +321,7 @@ function validateHohenmeter() {
   } else if (value > 350 && value < 1200) {
     showToast("Boaah 😨");
 
-  } else if (value > 220 && value < 330) {
+  } else if (value > 100 && value < 349) {
     showToast("Stark " + name + " 💪");
   }
 }
@@ -398,7 +398,7 @@ async function updateRanking(rankingData) {
       rankEmoji = "💪";
       rankText = index + 1;
     } else {
-      rankEmoji = "😎";
+      rankEmoji = "🏅";
       rankText = index + 1;
     }
 
