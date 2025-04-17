@@ -392,10 +392,10 @@ async function updateRanking(rankingData) {
       }
       rankEmoji = "🏆";
     } else if (index === 1) {
-      rankEmoji = "🔥";
+      rankEmoji = "🥈";
       rankText = index + 1;
     } else if (index === 2) {
-      rankEmoji = "💪";
+      rankEmoji = "🥉";
       rankText = index + 1;
     } else {
       rankEmoji = "🏅";
